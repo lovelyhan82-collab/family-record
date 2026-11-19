@@ -1,0 +1,1681 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FFF8EC">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="택민이의 할일">
+<title>택민이의 할일</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23BEAAEE'/%3E%3Ccircle cx='23' cy='28' r='4' fill='%233E3660'/%3E%3Ccircle cx='41' cy='28' r='4' fill='%233E3660'/%3E%3Cpath d='M25 40q7 6 14 0' stroke='%233E3660' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+:root{
+  --paper:#FFF8EC; --paper2:#FFFDF6; --card:#FFFDF7;
+  --ink:#4A3F33; --ink2:#6E6153; --muted:#A2957F;
+  --line:#EBDFC8; --line2:#F5ECDA;
+  --pink:#E78CA8; --pink-soft:#FDEDF2;
+  --green:#67B97F; --green-deep:#4E9C6B; --green-soft:#EAF7EE;
+  --gold:#F3C33C; --gold-deep:#C99B12; --gold-soft:#FFF4D2;
+  --orange:#F08A3C; --orange-soft:#FFEBD8;
+  --red:#CF4433;
+  --lav:#A98FE0; --lav2:#CDBBF4;
+  --shadow-sm:0 2px 8px rgba(198,175,130,.16);
+  --shadow:0 12px 32px rgba(190,166,120,.20);
+  --r:24px;
+  color-scheme:light;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Noto Sans KR","Noto Sans CJK KR","Malgun Gothic",sans-serif;
+  color:var(--ink); font-size:14px; line-height:1.45;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  background:
+    repeating-linear-gradient(0deg, rgba(233,180,160,.075) 0 22px, transparent 22px 44px),
+    repeating-linear-gradient(90deg, rgba(233,180,160,.075) 0 22px, transparent 22px 44px),
+    linear-gradient(180deg,#FFF9EE 0%,#FFF7E7 46%,#FFF6E2 100%);
+  background-attachment:fixed;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+body.modal-open{overflow:hidden}
+button{font:inherit; color:inherit; border:0; background:none; cursor:pointer}
+input,textarea,select{font:inherit; color:inherit}
+::-webkit-scrollbar{width:0;height:0}
+
+/* ================= layout ================= */
+.page{max-width:1180px;margin:0 auto;padding:0 18px 34px}
+
+/* ================= top bar ================= */
+.topbar{position:sticky;top:0;z-index:40;background:linear-gradient(180deg,rgba(255,249,238,.97),rgba(255,249,238,.90));backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(235,223,200,.7)}
+.topbar-inner{max-width:1180px;margin:0 auto;padding:9px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{min-width:0;flex:1 1 240px}
+.date-line{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:-.2px;display:flex;gap:6px;align-items:center}
+.date-line .sep{opacity:.55}
+.title-btn{display:flex;align-items:center;gap:7px;padding:3px 8px 3px 4px;border-radius:14px;max-width:100%;transition:background .18s}
+.title-btn:hover{background:rgba(243,195,60,.16)}
+.title-btn .home-ico{font-size:16px;filter:saturate(1.05)}
+.title-btn .title-text{font-size:22px;font-weight:900;letter-spacing:-.7px;color:#5A4B39;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.title-btn .chev{font-size:11px;color:#B6A489;margin-top:2px}
+.top-actions{display:flex;align-items:center;gap:8px;margin-left:auto;flex-wrap:wrap;justify-content:flex-end}
+.icon-btn{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-size:16px;background:#FFFDF6;border:1px solid var(--line);box-shadow:var(--shadow-sm);transition:transform .16s,background .16s}
+.icon-btn:hover{transform:translateY(-1px);background:#FFF9E9}
+.icon-btn.off{opacity:.55}
+.avatar{width:40px;height:40px;border-radius:50%;padding:0;overflow:hidden;background:linear-gradient(160deg,#F3ECFF,#E4D8FA);border:2px solid #fff;box-shadow:0 3px 10px rgba(150,125,190,.28);display:grid;place-items:center}
+.avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.avatar svg{width:76%;height:76%;display:block}
+.pill{display:flex;align-items:center;gap:6px;padding:9px 13px;border-radius:999px;background:#FFFDF6;border:1px solid var(--line);box-shadow:var(--shadow-sm);font-size:13px;font-weight:800;color:#6B5B45;transition:transform .16s,background .16s,box-shadow .16s;white-space:nowrap}
+.pill:hover{transform:translateY(-1px);background:#FFFAEC;box-shadow:0 5px 14px rgba(190,166,120,.22)}
+.pill .ico{font-size:14px}
+.pill.hot{background:linear-gradient(180deg,#FFE9B8,#FFD98A);border-color:#F0CB74}
+
+/* ================= hero ================= */
+.hero{position:relative;margin-top:16px;border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.6);isolation:isolate;height:clamp(276px,30vw,356px)}
+.hero .scene{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hero::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(12,18,38,.42) 0%,rgba(12,18,38,0) 42%,rgba(12,18,38,.10) 100%)}
+.hero-clock{position:absolute;left:clamp(14px,1.9vw,26px);top:clamp(12px,1.5vw,20px);display:flex;align-items:baseline;gap:clamp(8px,1.1vw,14px);color:#FFF6E2;z-index:3;text-shadow:0 6px 22px rgba(8,12,30,.72),0 1px 3px rgba(8,12,30,.45);padding:clamp(7px,.95vw,12px) clamp(13px,1.5vw,20px) clamp(8px,1vw,12px);border-radius:clamp(14px,1.6vw,20px);background:linear-gradient(180deg,rgba(11,18,42,.50),rgba(11,18,42,.22));border:1px solid rgba(255,238,200,.20);box-shadow:0 12px 30px rgba(6,10,26,.32),inset 0 1px 0 rgba(255,255,255,.14);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
+.hero-clock .ampm{font-size:clamp(14px,1.85vw,21px);font-weight:800;opacity:.95;letter-spacing:-.2px}
+.hero-clock .digits{font-size:clamp(40px,6.4vw,76px);font-weight:800;letter-spacing:-2px;font-variant-numeric:tabular-nums;line-height:1}
+.hero-clock .sec{font-size:.56em;opacity:.9;margin-left:2px;font-weight:700}
+.hero-mascot{position:absolute;right:clamp(26px,4.2vw,64px);left:auto;bottom:clamp(14px,2.2vw,26px);z-index:3;display:flex;flex-direction:column-reverse;align-items:center;gap:clamp(1px,.4vw,5px);animation:mascotFloat 4.8s ease-in-out infinite}
+.hero-mascot::before{content:"";position:absolute;left:50%;bottom:4%;width:126%;height:72%;transform:translateX(-50%);border-radius:50%;background:radial-gradient(circle at 50% 58%,rgba(255,216,146,.34),rgba(255,198,124,.13) 46%,rgba(255,198,124,0) 72%);pointer-events:none;z-index:-1}
+.mascot-btn{display:block;position:relative;width:clamp(116px,17.6vw,208px);height:clamp(116px,17.6vw,208px);filter:drop-shadow(0 14px 22px rgba(18,14,48,.52));transition:transform .2s}
+.mascot-btn:hover{transform:translateY(-3px) scale(1.02)}
+.mascot-btn:active{transform:scale(.94)}
+.mascot-btn svg,.mascot-btn img{width:100%;height:100%;display:block;object-fit:contain;border-radius:50%}
+@keyframes mascotFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.bubble{position:relative;margin-bottom:clamp(20px,3vw,34px);background:#FFFDF6;border:1.5px solid #E9DCBE;color:#5C4B36;font-weight:800;font-size:clamp(10px,1.15vw,14px);letter-spacing:-.3px;padding:7px 11px;border-radius:14px;box-shadow:0 5px 14px rgba(15,20,40,.28);max-width:min(46vw,240px);line-height:1.3}
+.bubble::after{content:"";position:absolute;left:14px;bottom:-7px;width:12px;height:12px;background:#FFFDF6;border-right:1.5px solid #E9DCBE;border-bottom:1.5px solid #E9DCBE;transform:rotate(45deg);border-bottom-right-radius:3px}
+.hero-mascot .bubble{margin:0;font-size:clamp(11px,1.28vw,16px);padding:clamp(6px,.8vw,9px) clamp(10px,1.2vw,15px);border-radius:15px;max-width:min(54vw,280px);text-align:center;box-shadow:0 7px 18px rgba(15,20,40,.34),0 0 0 3px rgba(255,252,242,.16)}
+.hero-mascot .bubble::after{left:50%;margin-left:-6px}
+.goal-badge{position:absolute;right:auto;left:clamp(14px,1.9vw,26px);bottom:clamp(12px,1.6vw,20px);z-index:3;display:flex;align-items:center;gap:7px;padding:clamp(7px,.95vw,10px) clamp(12px,1.4vw,18px);border-radius:999px;background:rgba(255,252,242,.95);border:1.5px solid rgba(243,195,60,.75);box-shadow:0 6px 18px rgba(20,16,50,.35),inset 0 1px 0 #fff;font-size:clamp(11px,1.35vw,15px);font-weight:900;color:#6A5638;letter-spacing:-.3px;transition:transform .16s,background .16s;backdrop-filter:blur(6px)}
+.goal-badge:hover{transform:translateY(-2px);background:#fff}
+.goal-badge .flag{font-size:1.05em}
+.goal-badge .gt{color:#B4863C;margin-left:1px;font-variant-numeric:tabular-nums}
+
+/* ================= week strip ================= */
+.strip-wrap{margin-top:14px}
+.strip{display:flex;gap:9px;align-items:stretch;flex-wrap:wrap}
+.day{position:relative;flex:1 1 0;min-width:0;background:linear-gradient(180deg,#FFFDF6,#FFFAEE);border:1.5px solid var(--line);border-radius:16px;padding:16px 4px 8px;display:flex;flex-direction:column;align-items:center;gap:2px;box-shadow:var(--shadow-sm);transition:transform .16s,box-shadow .16s,border-color .16s,background .16s;overflow:hidden}
+.day:hover{transform:translateY(-3px);box-shadow:0 8px 18px rgba(190,166,120,.22)}
+.day .dw{font-size:12px;font-weight:900;color:#7A6A52;letter-spacing:-.2px}
+.day .dd{font-size:10.5px;font-weight:800;color:#A9997E;font-variant-numeric:tabular-nums}
+.day .dp{font-size:11px;font-weight:900;color:#B9A98C;margin-top:3px;font-variant-numeric:tabular-nums}
+.day.today{border-color:#EBC15A;background:linear-gradient(180deg,#FFFBEA,#FFF2CC);box-shadow:0 0 0 3px rgba(243,195,60,.20),0 8px 18px rgba(190,166,120,.18)}
+.day.today .dw{color:#A97E22}
+.day.sel{border-color:#E7A0B6;background:linear-gradient(180deg,#FFF8FA,#FDEDF2);box-shadow:0 0 0 3px rgba(231,140,168,.18),0 8px 18px rgba(190,166,120,.18)}
+.day.sel .dw{color:#C46986}
+.today-tag{position:absolute;top:-1px;left:50%;transform:translateX(-50%);white-space:nowrap;background:#F3C33C;color:#6A4E12;font-size:8.5px;font-weight:900;padding:1px 7px;border-radius:0 0 7px 7px;letter-spacing:-.2px;box-shadow:0 2px 5px rgba(190,150,40,.28)}
+.day.today.sel{border-color:#EBC15A;background:linear-gradient(180deg,#FFFBEA,#FFF0C4);box-shadow:0 0 0 3px rgba(243,195,60,.22),0 8px 18px rgba(190,166,120,.18)}
+.day.today.sel .dw{color:#A97E22}
+.day .dp.all{color:var(--green-deep)}
+.week-sum{flex:0 0 106px;border-radius:16px;border:1.5px dashed #E3CE9C;background:linear-gradient(180deg,#FFFDF4,#FFF6E0);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:8px;box-shadow:var(--shadow-sm)}
+.week-sum .n{font-size:24px;font-weight:900;color:#8A6A24;line-height:1}
+.week-sum .cap{font-size:9.5px;font-weight:800;color:#B08F52;text-align:center;line-height:1.25;letter-spacing:-.3px}
+.week-sum .star{font-size:13px;margin-top:2px}
+
+/* gold sticker */
+.gold{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 33% 28%,#FFF1B8,#F7CB4A 58%,#D9A11C 100%);box-shadow:0 3px 8px rgba(180,130,20,.35),inset 0 2px 4px rgba(255,255,255,.75),inset 0 -3px 6px rgba(160,110,10,.25);color:#fff8dd;font-size:15px;line-height:1;animation:twinkle 2.6s ease-in-out infinite;position:relative}
+.gold::after{content:"";position:absolute;inset:-4px;border-radius:50%;background:conic-gradient(from 0deg,rgba(255,225,130,.75),rgba(255,225,130,0) 32%,rgba(255,225,130,.75) 60%,rgba(255,225,130,0) 88%,rgba(255,225,130,.75));opacity:.55;filter:blur(3px);z-index:-1;animation:spin 6s linear infinite}
+.gold.sm{width:26px;height:26px;font-size:12px;margin-top:2px}
+.gold .coin{width:74%;height:74%;display:block;filter:drop-shadow(0 1px 1px rgba(120,80,10,.38))}
+.gold .peek{position:absolute;right:-8px;bottom:-6px;width:20px;height:20px;border-radius:50%;background:#FFFDF6;box-shadow:0 2px 6px rgba(120,86,24,.32),0 0 0 1.5px rgba(255,255,255,.92);display:grid;place-items:center;overflow:hidden}
+.gold .peek svg{width:112%;height:112%;display:block;margin-top:2px;transform:translateY(2px)}
+.wk-sticker{display:inline-grid;place-items:center;margin-top:4px}
+@keyframes twinkle{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.08);filter:brightness(1.12)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ================= todays todo ================= */
+.todo{margin-top:16px}
+.section-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.section-head h2{margin:0;font-size:20px;font-weight:900;letter-spacing:-.7px;color:#54432F;display:flex;align-items:center;gap:8px}
+.count-pill{font-size:12px;font-weight:900;color:#8A6A24;background:#FFF1C6;border:1px solid #F0D68E;padding:3px 10px;border-radius:999px;letter-spacing:0;font-variant-numeric:tabular-nums}
+.head-actions{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.btn-soft{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-radius:999px;background:#FFFDF6;border:1.5px solid var(--line);box-shadow:var(--shadow-sm);font-size:13px;font-weight:800;color:#6B5B45;transition:transform .16s,background .16s,box-shadow .16s}
+.btn-soft:hover{transform:translateY(-1px);background:#FFFAEA;box-shadow:0 6px 16px rgba(190,166,120,.2)}
+.btn-soft.on{background:linear-gradient(180deg,#FFE6A6,#FFD46E);border-color:#EDBF52;color:#6A4A10}
+.grid-wrap{border-radius:22px;padding:12px;background:
+  repeating-linear-gradient(0deg,rgba(231,140,168,.05) 0 18px,transparent 18px 36px),
+  repeating-linear-gradient(90deg,rgba(231,140,168,.05) 0 18px,transparent 18px 36px),
+  linear-gradient(180deg,#FFFCF4,#FFF8EC);
+  border:1px solid #F1E6D0;box-shadow:inset 0 1px 0 #fff}
+.grid-host{display:block}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(106px,1fr));gap:10px}
+.card{--cpx:9px;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:12px var(--cpx) 34px;min-height:152px;border-radius:17px;background:linear-gradient(180deg,#FFFEF9,#FFF8E9);border:1.5px solid var(--line);box-shadow:var(--shadow-sm);transition:transform .18s,box-shadow .18s,border-color .18s,background .18s;overflow:hidden;text-align:center}
+.card:hover{transform:translateY(-3px);box-shadow:0 12px 24px rgba(190,166,120,.22);border-color:#E4D3B2}
+.card:active{transform:scale(.985)}
+.card .num{position:absolute;z-index:3;top:7px;left:7px;width:22px;height:22px;border-radius:50%;border:1.5px solid #E0CDA6;background:#FFFDF7;display:grid;place-items:center;font-size:11px;font-weight:900;color:#AE8F53;box-shadow:0 1px 3px rgba(180,150,90,.12)}
+.icon-wrap{position:relative;display:grid;place-items:center;padding:11px 0}
+.card .icon{font-size:clamp(26px,3.2vw,36px);line-height:1.1;filter:drop-shadow(0 3px 5px rgba(190,166,120,.22))}
+.card .name{font-size:13.5px;font-weight:900;color:#584735;letter-spacing:-.4px;word-break:keep-all;line-height:1.25}
+.card .bar{position:absolute;left:0;right:0;bottom:0;padding:7px 0 8px;border-radius:0;font-size:11.5px;font-weight:900;letter-spacing:-.2px;color:#B08B4B;background:#FFF4DE;border-top:1px solid #F2E4C6}
+.card.done{background:linear-gradient(180deg,#FBFFF9,#F0F9F1);border-color:#C3E4CB}
+.card.done .bar{background:#6CBB84;color:#fff;border-top-color:#5EAE77}
+.card.done .num{border-color:#C3E4CB;color:#7FB193}
+.card.just-done{animation:pop .52s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pop{0%{transform:scale(.92)}55%{transform:scale(1.045)}100%{transform:scale(1)}}
+.now-badge{position:absolute;z-index:3;top:7px;right:7px;background:linear-gradient(180deg,#FFA85C,#F1832F);color:#fff;font-size:9.5px;font-weight:900;padding:2.5px 7px;border-radius:999px;letter-spacing:-.2px;box-shadow:0 3px 8px rgba(240,138,60,.4);animation:bob 1.9s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2.5px)}}
+.stamp{position:absolute;z-index:2;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-9deg);width:56px;height:56px;border-radius:50%;border:2px solid rgba(201,63,46,.8);display:none;place-items:center;color:#C93F2E;font-size:9.5px;font-weight:900;line-height:1.45;letter-spacing:.2px;text-align:center;white-space:nowrap;background:rgba(255,251,242,.88);text-shadow:0 1px 0 rgba(255,255,255,.9);box-shadow:inset 0 0 0 2px rgba(255,255,255,.55),inset 0 0 0 3.2px rgba(201,63,46,.28)}
+.stamp::before{content:"";position:absolute;inset:-5px;border-radius:50%;border:1.2px dashed rgba(201,63,46,.4)}
+.card.done .stamp{display:grid;animation:stampIn .45s cubic-bezier(.2,1.5,.5,1)}
+@keyframes stampIn{0%{transform:translate(-50%,-50%) rotate(-9deg) scale(1.9);opacity:0}70%{opacity:1}100%{transform:translate(-50%,-50%) rotate(-9deg) scale(1);opacity:1}}
+.card.done .icon{opacity:.4;filter:grayscale(.55) drop-shadow(0 3px 5px rgba(190,166,120,.18))}
+.card.done .name{opacity:.7}
+
+/* edit mode */
+.card .tools{position:relative;z-index:3;display:none;grid-template-columns:1fr 1fr;gap:4px;margin-top:0;width:100%}
+body.editing .card .tools{display:grid}
+body.editing .now-badge{display:none}
+body.editing .card{padding-top:34px}
+.tools button{width:100%;height:26px;border-radius:8px;background:#FFFDF7;border:1px solid #E6D6B6;display:grid;place-items:center;font-size:12px;color:#7A6A52;box-shadow:0 1px 3px rgba(180,150,90,.12)}
+.tools button:disabled{opacity:.3;cursor:default}
+.tools button:hover{background:#FFF3D8}
+.tools button.del:hover{background:#FBE2DE;color:#C0453A}
+.add-card{border-style:dashed;border-color:#DCC9A2;background:linear-gradient(180deg,#FFFDF6,#FFF8EA);color:#A98F5E;justify-content:center;gap:6px;min-height:152px;padding:12px}
+.add-card .plus{font-size:30px;font-weight:400;line-height:1}
+.add-card span.t{font-size:12.5px;font-weight:900;color:#A98F5E}
+.add-card:hover{border-color:#E3B45A;color:#B98A2A}
+.empty{border-radius:16px;border:1.5px dashed #E0CFA9;background:#FFFDF6;padding:26px 16px;text-align:center;color:#A2957F;font-weight:800;font-size:13px}
+.empty .big{display:block;font-size:26px;margin-bottom:6px}
+
+/* ================= morning / evening ================= */
+.filters{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.fchip{display:inline-flex;align-items:center;gap:5px;padding:8px 12px;border-radius:999px;background:#FFFDF6;border:1.5px solid var(--line);box-shadow:var(--shadow-sm);font-size:12.5px;font-weight:900;color:#7A6A52;letter-spacing:-.3px;white-space:nowrap;transition:transform .16s,background .16s,box-shadow .16s,border-color .16s}
+.fchip:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(190,166,120,.22)}
+.fchip .fe{font-size:13px;line-height:1}
+.fchip .fn{font-size:11px;font-weight:900;padding:1px 6px;border-radius:999px;background:rgba(255,255,255,.85);border:1px solid rgba(120,100,70,.10);font-variant-numeric:tabular-nums;color:#8A7A62}
+.fchip.on{transform:translateY(-1px)}
+.fchip.on.all{background:linear-gradient(180deg,#FFF2C6,#FFE199);border-color:#EDC264;color:#7A5714}
+.fchip.on.all .fn{color:#8A6420}
+.fchip.on.morning{background:linear-gradient(180deg,#FFF7E3,#FFE4AE);border-color:#EFCB7E;color:#8A6420}
+.fchip.on.morning .fn{color:#8A6420}
+.fchip.on.evening{background:linear-gradient(180deg,#F5F0FE,#E3D9F8);border-color:#C8B7EA;color:#5B4C89}
+.fchip.on.evening .fn{color:#5B4C89}
+
+.pgroup+.pgroup{margin-top:14px;padding-top:14px;border-top:1.5px dashed #EDE0C8}
+.pgroup-head{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:14px;margin:0 0 9px;border:1.5px solid;letter-spacing:-.3px;box-shadow:var(--shadow-sm)}
+.pgroup-head.morning{background:linear-gradient(120deg,#FFF8E4,#FFE9BE);border-color:#F2D091;color:#8A6420}
+.pgroup-head.evening{background:linear-gradient(120deg,#F4EFFD,#E4DBF8);border-color:#CFC2EC;color:#5D4E8C}
+.pgroup-head .pico{font-size:15px;line-height:1}
+.pgroup-head .pname{font-size:14px;font-weight:900}
+.pgroup-head .pcount{font-size:11.5px;font-weight:900;padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.78);font-variant-numeric:tabular-nums;box-shadow:inset 0 0 0 1px rgba(255,255,255,.9)}
+.pgroup-head .pbar{margin-left:auto;width:150px;max-width:40%;height:8px;border-radius:999px;background:rgba(255,255,255,.82);overflow:hidden;box-shadow:inset 0 1px 3px rgba(120,100,70,.16)}
+.pgroup-head .pbar i{display:block;height:100%;border-radius:999px;transition:width .4s ease}
+.pgroup-head.morning .pbar i{background:linear-gradient(90deg,#FFC94D,#F0A33A)}
+.pgroup-head.evening .pbar i{background:linear-gradient(90deg,#B49BEE,#7E5FD0)}
+.pbadge{font-size:9.5px;font-weight:900;letter-spacing:-.2px;padding:2px 7px;border-radius:999px;line-height:1.2;white-space:nowrap;margin-top:2px}
+.pbadge.morning{background:#FFF3D4;color:#A2761C;box-shadow:inset 0 0 0 1px #F3DCA8}
+.pbadge.evening{background:#EFE9FC;color:#67569B;box-shadow:inset 0 0 0 1px #D9CDF2}
+.card.done .pbadge{opacity:.6}
+.period-chips{display:flex;gap:8px;flex-wrap:wrap}
+.period-chips button{flex:1 1 0;display:flex;align-items:center;justify-content:center;gap:6px;padding:12px 10px;border-radius:14px;background:#FFFDF6;border:1.5px solid #EADCC0;font-size:13.5px;font-weight:900;color:#8A7A62;letter-spacing:-.3px;transition:transform .14s,background .14s,border-color .14s,box-shadow .14s}
+.period-chips button:hover{transform:translateY(-1px);background:#FFFAEA}
+.period-chips button .pe{font-size:16px;line-height:1}
+.period-chips button.on[data-period=morning]{background:linear-gradient(180deg,#FFF8E4,#FFE7B6);border-color:#EFCB7E;color:#8A6420;box-shadow:0 0 0 3px rgba(240,190,90,.20)}
+.period-chips button.on[data-period=evening]{background:linear-gradient(180deg,#F5F0FE,#E3D9F8);border-color:#C8B7EA;color:#5B4C89;box-shadow:0 0 0 3px rgba(150,120,220,.18)}
+
+/* ================= footer ================= */
+.foot{margin-top:12px;display:flex;flex-wrap:wrap;gap:2px 6px;justify-content:center;text-align:center;font-size:11.5px;color:#B3A48C;font-weight:700;letter-spacing:-.2px;word-break:keep-all}
+.foot .dot{opacity:.5;margin:0 5px}
+
+/* ================= modals ================= */
+.modal-back{position:fixed;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;padding:18px;background:transparent;animation:fadeIn .2s ease}
+.modal-back::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:rgba(40,30,52,.44);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
+#celebrateModal{background:rgba(38,28,50,.5)}
+#celebrateModal::before{display:none}
+.modal-back.hidden{display:none}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{position:relative;z-index:2;width:100%;max-width:520px;max-height:88vh;overflow:auto;background:linear-gradient(180deg,#FFFDF7,#FFF8EC);border-radius:24px;border:1px solid #F2E7D2;box-shadow:0 30px 70px rgba(60,40,20,.3);padding:18px 18px 20px;animation:slideUp .26s cubic-bezier(.3,1.2,.5,1)}
+@keyframes slideUp{from{transform:translateY(18px) scale(.98);opacity:0}to{transform:none;opacity:1}}
+.modal-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.modal-head h3{margin:0;font-size:18px;font-weight:900;letter-spacing:-.6px;color:#54432F}
+.modal-head .x{margin-left:auto;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:20px;color:#8E7E66;background:#FFF7E6;border:1px solid #EFE1C6;line-height:1}
+.modal-head .x:hover{background:#FFEFD4}
+.field{display:block;margin-bottom:12px}
+.field > span{display:block;font-size:11.5px;font-weight:900;color:#9A8A70;letter-spacing:-.2px;margin:0 0 5px 3px}
+.field input[type=text],.field textarea,.field input:not([type]){width:100%;padding:11px 13px;border-radius:14px;border:1.5px solid #EADCC0;background:#fff;color:#4A3F33;font-weight:700;font-size:14px;outline:none;transition:border-color .16s,box-shadow .16s}
+.field input:focus,.field textarea:focus{border-color:#E9BE5C;box-shadow:0 0 0 3px rgba(233,190,92,.18)}
+.field textarea{resize:vertical;min-height:60px;line-height:1.5}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.field-row{display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:14px;background:#FFFBF0;border:1.5px solid #F0E5CF;margin-bottom:10px}
+.field-row > .lbl{font-size:12.5px;font-weight:900;color:#7A6A52;letter-spacing:-.3px}
+.field-row .right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.switch{width:52px;height:29px;border-radius:999px;background:#E5D9C4;position:relative;transition:background .2s}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:23px;height:23px;border-radius:50%;background:#fff;box-shadow:0 2px 5px rgba(120,100,70,.3);transition:transform .2s}
+.switch.on{background:#7BC08F}
+.switch.on::after{transform:translateX(23px)}
+.stepper{display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid #EADCC0;border-radius:999px;padding:3px 4px}
+.stepper button{width:28px;height:28px;border-radius:50%;background:#FFF3D9;color:#8A6A24;font-weight:900;font-size:15px;display:grid;place-items:center;line-height:1}
+.stepper button:hover{background:#FFE7B4}
+.stepper .val{min-width:26px;text-align:center;font-weight:900;color:#6A5638;font-variant-numeric:tabular-nums}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px 16px;border-radius:14px;font-size:13.5px;font-weight:900;letter-spacing:-.3px;border:1.5px solid transparent;transition:transform .14s,filter .14s,background .14s}
+.btn:active{transform:scale(.98)}
+.btn.primary{background:linear-gradient(180deg,#FFCF66,#F5B93F);color:#5F4410;border-color:#E9AC33;box-shadow:0 4px 12px rgba(220,170,50,.3)}
+.btn.primary:hover{filter:brightness(1.04)}
+.btn.ghost{background:#FFFAEE;color:#6B5B45;border-color:#EADCC0}
+.btn.ghost:hover{background:#FFF4DC}
+.btn.danger{background:#FDEDEA;color:#C0453A;border-color:#F3D2CB}
+.btn.danger:hover{background:#FBE0DB}
+.btn-row{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.btn-row .btn{flex:1 1 120px}
+.emoji-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(36px,1fr));gap:5px;max-height:132px;overflow:auto;padding:8px;border-radius:14px;border:1.5px solid #F0E5CF;background:#fff}
+.emoji-grid button{height:34px;border-radius:9px;font-size:18px;display:grid;place-items:center;transition:background .12s,transform .12s}
+.emoji-grid button:hover{background:#FFF3D8;transform:scale(1.08)}
+.emoji-grid button.on{background:#FFE9AF;box-shadow:inset 0 0 0 1.5px #EBC15A}
+.daychips{display:flex;gap:5px;flex-wrap:wrap}
+.daychips button{padding:7px 11px;border-radius:999px;background:#FFFDF6;border:1.5px solid #EADCC0;font-size:12px;font-weight:900;color:#8A7A62}
+.daychips button.on{background:#FFE9AF;border-color:#E5B94E;color:#7A5714}
+.hint{font-size:11px;color:#A99B84;font-weight:700;margin:6px 3px 0;line-height:1.4}
+.list{display:flex;flex-direction:column;gap:8px;max-height:200px;overflow:auto;margin-bottom:10px}
+.list .item{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:13px;background:#FFFBF0;border:1.5px solid #F1E7D3}
+.list .item .who{font-size:11px;font-weight:900;color:#B08B4B;white-space:nowrap}
+.list .item .txt{font-size:13px;font-weight:700;color:#5A4B38;flex:1;word-break:break-word}
+.list .item .when{font-size:10px;color:#BBAE97;font-weight:700;white-space:nowrap}
+.list .item .del{width:24px;height:24px;border-radius:50%;background:#FFF1EC;color:#C0453A;display:grid;place-items:center;font-size:12px}
+.quick{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.quick button{padding:7px 11px;border-radius:999px;background:#FFF6E4;border:1.5px solid #F0E0BE;font-size:12px;font-weight:800;color:#8A6A34}
+.quick button:hover{background:#FFEDC9}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(14px);background:rgba(58,46,36,.94);color:#FFF6E6;padding:11px 18px;border-radius:18px;font-size:12.5px;font-weight:800;z-index:300;opacity:0;pointer-events:none;transition:opacity .22s,transform .22s;letter-spacing:-.2px;box-shadow:0 12px 30px rgba(40,25,10,.35);max-width:calc(100vw - 34px);text-align:center;line-height:1.4}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* celebration */
+#celebrateModal .modal{max-width:430px;text-align:center;position:relative;overflow:hidden;background:radial-gradient(120% 90% at 50% 0%,#FFF7E0,#FFFBEF 55%,#FFF6E7);border-color:#F4DFAE}
+.cel-head{font-size:22px;font-weight:900;letter-spacing:-.8px;color:#6A4E18;margin:6px 0 2px;line-height:1.25}
+.cel-hero{display:flex;align-items:center;justify-content:center;gap:clamp(6px,2vw,12px);margin:2px 0 2px}
+.cel-hero .cel-emoji{font-size:26px;line-height:1}
+.cel-mascot{width:clamp(54px,14vw,72px);height:clamp(54px,14vw,72px);display:block;filter:drop-shadow(0 8px 14px rgba(120,84,170,.32));animation:mascotFloat 3.4s ease-in-out infinite}
+.sticker-wrap{position:relative;width:max-content;margin:6px auto 14px}
+.sticker-wrap .big-sticker{margin:0}
+.sticker-peek{position:absolute;right:-22px;bottom:-10px;width:44px;height:44px;display:block;filter:drop-shadow(0 4px 8px rgba(120,86,24,.32));animation:mascotFloat 4.2s ease-in-out infinite}
+.cel-deco{position:absolute;pointer-events:none;opacity:.34;filter:saturate(.9)}
+.cel-deco.d1{width:34px;height:34px;left:12px;top:14px;transform:rotate(-16deg)}
+.cel-deco.d2{width:26px;height:26px;right:12px;top:16px;transform:rotate(14deg);opacity:.28}
+.cel-sub{font-size:12px;font-weight:800;color:#B49A66;margin-bottom:10px}
+.big-sticker{width:104px;height:104px;margin:6px auto 12px;border-radius:50%;display:grid;place-items:center;font-size:44px;color:#FFF8DE;background:radial-gradient(circle at 32% 26%,#FFF6C9,#F8CB45 55%,#D69C15 100%);box-shadow:0 14px 30px rgba(200,150,25,.4),inset 0 -4px 10px rgba(150,100,10,.25),inset 0 4px 10px rgba(255,255,255,.8);position:relative;animation:stickerPop .7s cubic-bezier(.2,1.5,.4,1)}
+.big-sticker::after{content:"";position:absolute;inset:-10px;border-radius:50%;background:conic-gradient(from 0deg,rgba(255,225,130,.85),rgba(255,225,130,0) 25%,rgba(255,225,130,.85) 50%,rgba(255,225,130,0) 75%,rgba(255,225,130,.85));filter:blur(5px);z-index:-1;animation:spin 7s linear infinite}
+@keyframes stickerPop{0%{transform:scale(.2) rotate(-30deg);opacity:0}60%{transform:scale(1.12) rotate(6deg)}100%{transform:scale(1) rotate(0)}}
+.cel-praise{font-size:15px;font-weight:900;color:#7A5A24;line-height:1.5;letter-spacing:-.4px;margin:0 10px 4px}
+#celebrateModal .btn-row{margin-top:16px}
+
+/* fireworks canvas */
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:1;display:none}
+#fx.on{display:block}
+
+/* ================= responsive ================= */
+@media (max-width:900px){
+  .page{padding:0 14px 30px}
+  .topbar-inner{padding:8px 14px;gap:10px}
+  .title-btn .title-text{font-size:19px}
+  .pill{padding:8px 10px}
+  .pill .lbl{display:none}
+  .pill .ico{font-size:16px}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:9px}
+  .card{min-height:158px}
+}
+@media (max-width:680px){
+  .page{padding:0 11px 26px}
+  .topbar-inner{padding:7px 11px;gap:8px}
+  .topbar-inner{position:relative;flex-wrap:wrap;gap:7px;padding:8px 11px 9px}
+  .brand{flex:1 1 100%;min-width:0;padding-right:46px}
+  .title-btn .title-text{font-size:18px}
+  .date-line{font-size:11px;white-space:nowrap;overflow:hidden}
+  .avatar{position:absolute;top:9px;right:11px;width:34px;height:34px}
+  .top-actions{flex:1 1 100%;gap:6px;margin-left:0;flex-wrap:nowrap}
+  .top-actions .icon-btn{display:none}
+  .pill{flex:1;justify-content:center;padding:9px 6px}
+  .pill .lbl{display:inline;font-size:11.5px;letter-spacing:-.3px}
+  .pill .ico{font-size:13px}
+  .icon-btn{width:34px;height:34px;font-size:14px}
+  .avatar{width:36px;height:36px}
+  .pill{padding:8px 9px;border-radius:12px}
+  .hero{margin-top:11px;height:238px;border-radius:20px}
+  .hero-clock{left:9px;top:9px;gap:5px;padding:5px 10px 6px;border-radius:12px}
+  .hero-clock .ampm{font-size:10.5px}
+  .hero-clock .digits{font-size:31px;letter-spacing:-1.2px}
+  .hero-mascot{right:8px;left:auto;bottom:8px;gap:0}
+  .mascot-btn{width:98px;height:98px}
+  .hero-mascot .bubble{font-size:10px;padding:5px 8px;max-width:168px;border-radius:11px}
+  .hero-mascot .bubble::after{width:9px;height:9px;bottom:-5.5px;margin-left:-4.5px}
+  .goal-badge{right:auto;left:9px;bottom:9px;padding:6px 10px;font-size:10.5px;gap:4px}
+  .strip{gap:5px}
+  .day{border-radius:12px;padding:13px 2px 6px;flex:1 1 calc(14.285% - 5px);min-width:0}
+  .day .dw{font-size:10.5px}
+  .day .dd{font-size:8.5px}
+  .day .dp{font-size:9px;margin-top:2px}
+  .gold.sm{width:21px;height:21px;font-size:10px}
+  .week-sum{flex:1 0 100%;flex-direction:row;gap:8px;padding:8px 12px;justify-content:center;border-radius:12px}
+  .week-sum .n{font-size:17px}
+  .week-sum .cap{font-size:10px;text-align:left}
+  .week-sum .cap br{display:none}
+  .section-head h2{font-size:17px}
+  .head-actions{gap:6px;width:100%;margin-left:0}
+  .btn-soft{flex:1 1 0;justify-content:center;padding:9px 8px;font-size:12px}
+  .grid-wrap{padding:9px;border-radius:18px}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:7px}
+  .card{--cpx:6px;min-height:132px;padding:10px var(--cpx) 30px;border-radius:14px;gap:2px}
+  .card .icon{font-size:23px}
+  .icon-wrap{padding:7px 0}
+  .card .name{font-size:11.5px}
+  .card .bar{font-size:10px;padding:6px 0 7px;border-radius:0 0 12px 12px}
+  .card .num{width:19px;height:19px;font-size:9.5px;top:5px;left:5px}
+  .now-badge{font-size:8.5px;padding:2px 5px;top:5px;right:5px}
+  .stamp{width:46px;height:46px;font-size:8px;letter-spacing:0}
+  .card .bar{padding:6px 0 7px}
+
+  .add-card{min-height:132px}
+  .filters{width:100%;gap:5px}
+  .fchip{flex:1;justify-content:center;padding:8px 5px;gap:3px;font-size:11.5px}
+  .fchip .fe{font-size:12px}
+  .fchip .fn{font-size:10px;padding:1px 5px}
+  .pgroup+.pgroup{margin-top:11px;padding-top:11px}
+  .pgroup-head{padding:7px 9px;gap:6px;border-radius:12px;margin-bottom:7px}
+  .pgroup-head .pname{font-size:12.5px}
+  .pgroup-head .pcount{font-size:10.5px;padding:1px 7px}
+  .pgroup-head .pbar{width:64px;height:7px}
+  .pbadge{font-size:9px;padding:1.5px 6px}
+  .period-chips button{padding:11px 8px;font-size:12.5px}
+  .modal{padding:15px 14px 17px;border-radius:20px}
+  .row2,.row3{grid-template-columns:1fr}
+}
+@media (min-width:1200px){
+  .grid{grid-template-columns:repeat(auto-fill,minmax(134px,1fr))}
+}
+</style>
+</head>
+<body>
+<!-- 메타몽 도장·스티커용 공통 심볼 -->
+<svg class="ditto-sprite" width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden">
+  <defs>
+    <radialGradient id="dittoG" cx="36%" cy="28%" r="78%">
+      <stop offset="0%" stop-color="#E9DEFC"/><stop offset="52%" stop-color="#C4B1F0"/><stop offset="100%" stop-color="#9B80D6"/>
+    </radialGradient>
+    <symbol id="dittoMini" viewBox="18 6 84 96">
+      <path d="M60 14c19-1 33 11 35 27 1 9-2 15 0 23 3 13-6 26-19 27-8 1-12 4-20 3-15-2-26-14-26-28 0-9 3-14 5-23 3-15 12-28 25-29z" fill="url(#dittoG)"/>
+      <ellipse cx="35" cy="70" rx="9" ry="6" fill="#F1A9C6" opacity=".55"/>
+      <ellipse cx="85" cy="70" rx="9" ry="6" fill="#F1A9C6" opacity=".55"/>
+      <ellipse cx="46" cy="57" rx="5.4" ry="6.2" fill="#3B3360"/>
+      <ellipse cx="74" cy="57" rx="5.4" ry="6.2" fill="#3B3360"/>
+      <circle cx="47.8" cy="54.6" r="1.7" fill="#fff" opacity=".92"/>
+      <circle cx="75.8" cy="54.6" r="1.7" fill="#fff" opacity=".92"/>
+      <path d="M52 72q8 8.5 16 0" stroke="#3B3360" stroke-width="3.1" fill="none" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="dittoFace" viewBox="10 2 102 108">
+      <ellipse cx="60" cy="104" rx="32" ry="5.5" fill="#0D1428" opacity=".26"/>
+      <path d="M60 14c19-1 33 11 35 27 1 9-2 15 0 23 3 13-6 26-19 27-8 1-12 4-20 3-15-2-26-14-26-28 0-9 3-14 5-23 3-15 12-28 25-29z" fill="url(#dittoG)"/>
+      <ellipse cx="35" cy="70" rx="9" ry="6" fill="#F1A9C6" opacity=".55"/>
+      <ellipse cx="85" cy="70" rx="9" ry="6" fill="#F1A9C6" opacity=".55"/>
+      <ellipse cx="46" cy="57" rx="5.4" ry="6.2" fill="#3B3360"/>
+      <ellipse cx="74" cy="57" rx="5.4" ry="6.2" fill="#3B3360"/>
+      <circle cx="47.8" cy="54.6" r="1.7" fill="#fff" opacity=".92"/>
+      <circle cx="75.8" cy="54.6" r="1.7" fill="#fff" opacity=".92"/>
+      <path d="M52 72q8 8.5 16 0" stroke="#3B3360" stroke-width="3.1" fill="none" stroke-linecap="round"/>
+      <g fill="#FFF6D8">
+        <path d="M22 26l2.6 6 6 2.6-6 2.6L22 43l-2.6-6L13 34.2l6-2.6z" opacity=".95"/>
+        <path d="M97 22l2 4.6 4.6 2-4.6 2L97 35l-2-4.4-4.6-2 4.6-2z" opacity=".85"/>
+        <path d="M101 86l1.6 3.6 3.6 1.6-3.6 1.6L101 96l-1.6-3.6L95.8 91l3.6-1.6z" opacity=".7"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+<div class="page">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="date-line"><span id="dateLine">11월 19일 목요일</span><span class="sep">·</span><span id="timeLine">오후 9:16</span></div>
+        <button class="title-btn" id="titleBtn" aria-label="대시보드 제목 수정">
+          <span class="home-ico">🏠</span>
+          <span class="title-text" id="titleText">택민이의 할일</span>
+          <span class="chev">▾</span>
+        </button>
+      </div>
+      <div class="top-actions">
+        <button class="icon-btn" id="soundBtn" title="효과음 켜기/끄기" aria-label="효과음 켜기/끄기">🔊</button>
+        <button class="avatar" id="avatarBtn" title="프로필 사진 바꾸기" aria-label="프로필 사진 바꾸기"></button>
+        <button class="pill" id="cheerBtn"><span class="ico">💬</span><span class="lbl">채팅/응원</span></button>
+        <button class="pill" id="settingsBtn"><span class="ico">⚙️</span><span class="lbl">설정/수정</span></button>
+        <button class="pill" id="shareBtn"><span class="ico">📤</span><span class="lbl">공유/백업</span></button>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero" id="hero">
+    <svg class="scene" viewBox="0 0 1200 320" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <defs>
+        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#0C1730"/>
+          <stop offset="30%" stop-color="#1B2A52"/>
+          <stop offset="55%" stop-color="#3A4176"/>
+          <stop offset="74%" stop-color="#8B6379"/>
+          <stop offset="87%" stop-color="#DE8F5F"/>
+          <stop offset="100%" stop-color="#F2B173"/>
+        </linearGradient>
+        <radialGradient id="moonGlow"><stop offset="0%" stop-color="#FFEBC2" stop-opacity=".5"/><stop offset="100%" stop-color="#FFEBC2" stop-opacity="0"/></radialGradient>
+        <radialGradient id="fireGlow"><stop offset="0%" stop-color="#FFB257" stop-opacity=".55"/><stop offset="60%" stop-color="#FF9A3D" stop-opacity=".18"/><stop offset="100%" stop-color="#FF9A3D" stop-opacity="0"/></radialGradient>
+        <radialGradient id="warmGlow"><stop offset="0%" stop-color="#FFD98A" stop-opacity=".7"/><stop offset="100%" stop-color="#FFD98A" stop-opacity="0"/></radialGradient>
+        <linearGradient id="ground" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#26304F"/><stop offset="100%" stop-color="#141B31"/></linearGradient>
+        <g id="pine"><path d="M0 -42 L-15 0 L-7 0 L-23 30 L23 30 L7 0 L15 0 Z"/><rect x="-3" y="30" width="6" height="9" rx="1.5"/></g>
+        <g id="tree"><circle cx="0" cy="-30" r="20"/><circle cx="-15" cy="-16" r="13"/><circle cx="15" cy="-16" r="13"/><rect x="-3.5" y="-10" width="7" height="18" rx="2" fill="#5A3B26"/></g>
+      </defs>
+      <rect width="1200" height="320" fill="url(#sky)"/>
+      <g id="stars"></g>
+      <circle cx="1052" cy="58" r="78" fill="url(#moonGlow)"/>
+      <circle cx="1052" cy="58" r="23" fill="#FFEDC6"/>
+      <circle cx="1044" cy="51" r="4.5" fill="#F3D79B" opacity=".65"/>
+      <circle cx="1059" cy="66" r="3" fill="#F3D79B" opacity=".45"/>
+      <path d="M0 196 L110 128 L190 178 L286 118 L390 188 L480 140 L600 194 L700 132 L810 190 L910 142 L1010 194 L1110 138 L1200 190 L1200 320 L0 320 Z" fill="#2E3A66"/>
+      <path d="M0 236 L80 196 L170 238 L250 198 L340 240 L450 206 L560 242 L660 200 L770 240 L880 202 L990 242 L1100 206 L1200 240 L1200 320 L0 320 Z" fill="#1F2A4C"/>
+      <rect x="0" y="240" width="1200" height="80" fill="url(#ground)"/>
+      <path d="M0 262 Q200 250 420 264 T840 258 T1200 264 L1200 320 L0 320 Z" fill="#232D4B" opacity=".85"/>
+      <path d="M120 128 Q350 176 590 130" fill="none" stroke="#6E6E9E" stroke-width="1.2" opacity=".45"/>
+      <g fill="#FFD98A">
+        <circle cx="178" cy="140" r="2.6"/><circle cx="240" cy="151" r="2.6"/><circle cx="306" cy="158" r="2.6" opacity=".9"/>
+        <circle cx="372" cy="160" r="2.6"/><circle cx="440" cy="156" r="2.6" opacity=".85"/><circle cx="508" cy="146" r="2.6"/><circle cx="566" cy="134" r="2.6" opacity=".9"/>
+      </g>
+      <path d="M646 126 Q870 176 1122 130" fill="none" stroke="#6E6E9E" stroke-width="1.2" opacity=".4"/>
+      <g fill="#FFD98A">
+        <circle cx="700" cy="140" r="2.4"/><circle cx="768" cy="153" r="2.4" opacity=".9"/><circle cx="838" cy="160" r="2.4"/>
+        <circle cx="908" cy="160" r="2.4" opacity=".85"/><circle cx="980" cy="152" r="2.4"/><circle cx="1054" cy="140" r="2.4" opacity=".9"/>
+      </g>
+      <circle cx="624" cy="262" r="92" fill="url(#fireGlow)"/>
+      <use href="#tree" transform="translate(318 270) scale(1.05)" fill="#E08A3E"/>
+      <use href="#tree" transform="translate(392 274) scale(.78)" fill="#E9B23F"/>
+      <use href="#tree" transform="translate(884 272) scale(.95)" fill="#DB7E4C"/>
+      <use href="#tree" transform="translate(152 264) scale(.62)" fill="#E7A24B"/>
+      <use href="#pine" transform="translate(62 274) scale(1.12)" fill="#2A5A4C"/>
+      <use href="#pine" transform="translate(132 278) scale(.78)" fill="#2F6353"/>
+      <use href="#pine" transform="translate(204 278) scale(1.0)" fill="#275348"/>
+      <use href="#pine" transform="translate(246 282) scale(.62)" fill="#2F6353"/>
+      <use href="#pine" transform="translate(962 276) scale(1.05)" fill="#2A5A4C"/>
+      <use href="#pine" transform="translate(1032 280) scale(.72)" fill="#2F6353"/>
+      <use href="#pine" transform="translate(1106 276) scale(1.18)" fill="#275348"/>
+      <use href="#pine" transform="translate(1162 282) scale(.8)" fill="#2F6353"/>
+      <!-- tent -->
+      <g transform="translate(470 0)">
+        <path d="M8 274 L60 196 L112 274 Z" fill="#D4634B"/>
+        <path d="M60 196 L112 274 L84 274 Z" fill="#AF4C39"/>
+        <path d="M60 226 L78 274 L44 274 Z" fill="#7A3526"/>
+        <path d="M60 196 L60 274" stroke="#EDA983" stroke-width="2" opacity=".75"/>
+        <circle cx="60" cy="195" r="3.2" fill="#FFD79A"/>
+      </g>
+      <!-- campfire -->
+      <g transform="translate(624 270)">
+        <rect x="-25" y="-2" width="50" height="7" rx="3.5" fill="#6B4227" transform="rotate(-9)"/>
+        <rect x="-25" y="-2" width="50" height="7" rx="3.5" fill="#57341D" transform="rotate(11)"/>
+        <path d="M0 -36 C11 -21 15 -10 6 -2 C2 4 -7 3 -10 -3 C-14 -12 -6 -23 0 -36 Z" fill="#FFAD33"/>
+        <path d="M0 -25 C6 -15 8 -8 3 -2 C0 2 -5 1 -6 -3 C-8 -11 -3 -18 0 -25 Z" fill="#FFE27C"/>
+      </g>
+      <!-- cabin -->
+      <g transform="translate(702 0)">
+        <circle cx="26" cy="242" r="30" fill="url(#warmGlow)" opacity=".65"/>
+        <circle cx="84" cy="242" r="30" fill="url(#warmGlow)" opacity=".65"/>
+        <rect x="0" y="212" width="112" height="62" fill="#7B5333"/>
+        <rect x="0" y="212" width="112" height="6" fill="#8F6440"/>
+        <path d="M-12 214 L56 166 L124 214 Z" fill="#4C3320"/>
+        <rect x="16" y="230" width="24" height="21" rx="3" fill="#FFD57A"/>
+        <rect x="72" y="230" width="24" height="21" rx="3" fill="#FFD57A"/>
+        <line x1="28" y1="230" x2="28" y2="251" stroke="#9C6B33" stroke-width="1.6"/>
+        <line x1="84" y1="230" x2="84" y2="251" stroke="#9C6B33" stroke-width="1.6"/>
+        <rect x="48" y="240" width="18" height="34" rx="3" fill="#553722"/>
+        <rect x="0" y="212" width="6" height="62" fill="#684427"/>
+        <rect x="106" y="212" width="6" height="62" fill="#684427"/>
+      </g>
+      <rect x="0" y="274" width="1200" height="46" fill="#1A2340" opacity=".55"/>
+    </svg>
+
+    <div class="hero-clock"><span class="ampm" id="clockAmPm">오후</span><span class="digits" id="clockDigits">9:16<span class="sec" id="clockSec">:05</span></span></div>
+
+    <div class="hero-mascot">
+      <button class="mascot-btn" id="mascotBtn" title="마스코트 사진 바꾸기" aria-label="마스코트 사진 바꾸기">
+        <svg viewBox="0 0 120 120" aria-hidden="true"><use href="#dittoFace"/></svg>
+      </button>
+      <div class="bubble" id="bubble">택민이 오늘도 화이팅!</div>
+    </div>
+
+    <button class="goal-badge" id="goalBtn" title="목표 시간 수정"><span class="flag">🌙</span><span id="goalLabel">잘 준비</span><span class="gt" id="goalTime">밤 9:30</span></button>
+  </section>
+
+  <section class="strip-wrap">
+    <div class="strip" id="strip"></div>
+  </section>
+
+  <section class="todo">
+    <div class="section-head">
+      <h2><span id="listTitle">오늘 할 일</span> <span class="count-pill" id="countPill">0/10</span></h2>
+      <div class="filters" id="filters" role="group" aria-label="아침·저녁 루틴 보기 전환"></div>
+      <div class="head-actions">
+        <button class="btn-soft" id="addTaskBtn">＋ 할 일 추가</button>
+        <button class="btn-soft" id="editModeBtn">✏️ 편집 모드</button>
+      </div>
+    </div>
+    <div class="grid-wrap">
+      <div class="grid-host" id="grid"></div>
+    </div>
+  </section>
+
+  <footer class="foot"><span>할 일을 모두 끝내면 폭죽이 터져요 🎆</span><span class="dot">·</span><span>모든 내용은 이 기기에 자동 저장됩니다</span></footer>
+</div>
+
+<!-- ============ settings modal ============ -->
+<div class="modal-back hidden" id="settingsModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="설정">
+    <div class="modal-head"><h3>⚙️ 설정 / 수정</h3><button class="x" data-close aria-label="닫기">×</button></div>
+    <label class="field"><span>대시보드 제목</span><input type="text" id="setTitle" maxlength="24" placeholder="택민이의 할일"></label>
+    <label class="field"><span>아이 이름</span><input type="text" id="setChild" maxlength="12" placeholder="택민이"></label>
+    <div class="row2">
+      <label class="field"><span>목표 배지 문구</span><input type="text" id="setGoalLabel" maxlength="12" placeholder="잘 준비"></label>
+      <label class="field"><span>목표 시간</span><input type="text" id="setGoalTime" maxlength="12" placeholder="밤 9:30"></label>
+    </div>
+    <label class="field"><span>마스코트 응원 문구</span><input type="text" id="setBubble" maxlength="30" placeholder="택민이 오늘도 화이팅!"></label>
+    <label class="field"><span>칭찬 메시지 (모두 완료했을 때)</span><textarea id="setPraise" rows="2" maxlength="90" placeholder="택민이 정말 멋져! 칭찬스티커 받으러 가자!"></textarea></label>
+    <div class="field-row"><span class="lbl">효과음</span><div class="right"><button class="switch" id="setSound" role="switch" aria-label="효과음"></button></div></div>
+    <div class="field-row"><span class="lbl">이번 주 칭찬스티커</span><div class="right"><button class="btn ghost" id="resetStickers" style="padding:7px 11px;font-size:12px">초기화</button><div class="stepper"><button id="stMinus" aria-label="스티커 줄이기">−</button><span class="val" id="stVal">0</span><button id="stPlus" aria-label="스티커 늘리기">＋</button></div></div></div>
+    <div class="field-row"><span class="lbl">사진</span><div class="right"><button class="btn ghost" id="avatarPhoto" style="padding:7px 11px;font-size:12px">프로필</button><button class="btn ghost" id="mascotPhoto" style="padding:7px 11px;font-size:12px">마스코트</button><button class="btn ghost" id="clearPhotos" style="padding:7px 11px;font-size:12px">기본 그림</button></div></div>
+    <p class="hint">목표 배지·제목·이름은 화면에서 눌러도 바로 고칠 수 있어요.</p>
+    <div class="btn-row"><button class="btn primary" data-close>저장하고 닫기</button></div>
+  </div>
+</div>
+
+<!-- ============ task modal ============ -->
+<div class="modal-back hidden" id="taskModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="할 일 편집">
+    <div class="modal-head"><h3 id="taskModalTitle">＋ 할 일 추가</h3><button class="x" data-close aria-label="닫기">×</button></div>
+    <label class="field"><span>할 일 이름</span><input type="text" id="taskName" maxlength="24" placeholder="예) 피아노 연습"></label>
+    <div class="field"><span>아이콘</span><div class="emoji-grid" id="emojiGrid"></div>
+      <input type="text" id="taskIcon" maxlength="4" placeholder="직접 입력 (이모지 한 글자)" style="margin-top:6px">
+    </div>
+    <div class="field"><span>언제 하는 일인가요?</span><div class="period-chips" id="periodChips"></div></div>
+    <div class="field"><span>무슨 요일에 하나요?</span><div class="daychips" id="dayChips"></div></div>
+    <div class="btn-row">
+      <button class="btn danger" id="taskDelete" style="flex:0 0 auto">삭제</button>
+      <button class="btn primary" id="taskSave">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ cheer modal ============ -->
+<div class="modal-back hidden" id="cheerModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="채팅 응원">
+    <div class="modal-head"><h3>💬 가족 채팅 / 응원</h3><button class="x" data-close aria-label="닫기">×</button></div>
+    <div class="quick" id="quickCheers">
+      <button data-t="👍 최고야!">👍 최고야!</button>
+      <button data-t="❤️ 사랑해">❤️ 사랑해</button>
+      <button data-t="🔥 오늘도 화이팅!">🔥 화이팅!</button>
+      <button data-t="⭐ 정말 대단해">⭐ 대단해</button>
+      <button data-t="🍀 조금만 더!">🍀 조금만 더!</button>
+    </div>
+    <div class="list" id="cheerList"></div>
+    <div class="row2">
+      <label class="field"><span>보내는 사람</span><input type="text" id="cheerFrom" maxlength="10" placeholder="엄마"></label>
+      <label class="field"><span>한마디</span><input type="text" id="cheerText" maxlength="60" placeholder="응원 메시지"></label>
+    </div>
+    <div class="btn-row"><button class="btn primary" id="cheerSend">응원 보내기</button></div>
+  </div>
+</div>
+
+<!-- ============ share modal ============ -->
+<div class="modal-back hidden" id="shareModal">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="공유 및 백업">
+    <div class="modal-head"><h3>📤 공유 / 백업</h3><button class="x" data-close aria-label="닫기">×</button></div>
+    <p class="hint" style="margin:0 3px 12px">할 일·완료 기록·설정을 파일 하나로 저장해요. 새 기기에서 불러오면 그대로 이어져요.</p>
+    <div class="btn-row" style="margin-top:0">
+      <button class="btn primary" id="exportBtn">⬇️ 백업 파일 저장</button>
+      <button class="btn ghost" id="copyBtn">📋 JSON 복사</button>
+    </div>
+    <div class="btn-row">
+      <button class="btn ghost" id="importBtn">⬆️ 백업 파일 불러오기</button>
+      <button class="btn danger" id="resetBtn">🗑️ 처음 상태로</button>
+    </div>
+    <p class="hint" id="shareStatus"></p>
+  </div>
+</div>
+
+<!-- ============ celebration modal ============ -->
+<div class="modal-back hidden" id="celebrateModal">
+  <canvas id="fx"></canvas>
+  <div class="modal" role="dialog" aria-modal="true" aria-label="축하">
+    <svg class="cel-deco d1" viewBox="18 6 84 96" aria-hidden="true"><use href="#dittoMini"/></svg>
+    <svg class="cel-deco d2" viewBox="18 6 84 96" aria-hidden="true"><use href="#dittoMini"/></svg>
+    <div class="cel-hero"><span class="cel-emoji">🎉</span><svg class="cel-mascot" viewBox="0 0 120 120" aria-hidden="true"><use href="#dittoFace"/></svg><span class="cel-emoji">🎉</span></div>
+    <div class="cel-head">오늘 할 일 끝!</div>
+    <div class="cel-sub" id="celSub">모두 해냈어요</div>
+    <div class="sticker-wrap"><div class="big-sticker">★</div><svg class="sticker-peek" viewBox="18 6 84 96" aria-hidden="true"><use href="#dittoMini"/></svg></div>
+    <p class="cel-praise" id="celPraise">택민이 정말 멋져! 칭찬스티커 받으러 가자!</p>
+    <div class="btn-row">
+      <button class="btn primary" id="celAgain">🎆 한 번 더</button>
+      <button class="btn ghost" data-close>닫기</button>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="imgPicker" accept="image/*" hidden>
+<input type="file" id="jsonPicker" accept="application/json,.json" hidden>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+'use strict';
+
+/* ---------------- constants ---------------- */
+var KEY='taekmin-todo-v1';
+var WEEK_KO=['월','화','수','목','금','토','일'];
+var ALL_DAYS=[0,1,2,3,4,5,6];
+var EMOJIS=['✍️','📓','📚','✏️','🏃','🚿','🪥','🧮','🔤','🎹','🎨','🎧','⚽','🚴','🧹','🧺','🛏️','🧴','🥛','🍎','🥗','🧘','😴','⏰','🐶','🐱','🌱','🌟','❤️','🎯','🧸','📝','🖍️','🧩','🎒','🧦','🫧','🍀','🌙','🎵'];
+var $=function(id){return document.getElementById(id);};
+function uid(){return 'x'+Math.random().toString(36).slice(2,9);}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function pad(n){return n<10?'0'+n:''+n;}
+function isoOf(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+function startOfWeek(d){var t=new Date(d.getFullYear(),d.getMonth(),d.getDate());var wd=(t.getDay()+6)%7;t.setDate(t.getDate()-wd);return t;}
+function wdOf(d){return (d.getDay()+6)%7;}
+function todayDate(){var n=new Date();return new Date(n.getFullYear(),n.getMonth(),n.getDate());}
+function addDays(d,n){var t=new Date(d.getFullYear(),d.getMonth(),d.getDate());t.setDate(t.getDate()+n);return t;}
+function sameDay(a,b){return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();}
+
+/* ---------------- state ---------------- */
+function defaultState(){
+  return {
+    title:'택민이의 할일', child:'택민이',
+    goalLabel:'잘 준비', goalTime:'밤 9:30',
+    bubble:'택민이 오늘도 화이팅!',
+    praise:'택민이 정말 멋져! 칭찬스티커 받으러 가자!',
+    sound:true, bonus:0, avatar:null, mascot:null,
+    tasks:[
+      {id:'m1',name:'이불 정리',icon:'🛏️',days:[0,1,2,3,4,5,6],period:'morning'},
+      {id:'m2',name:'세수·양치',icon:'🫧',days:[0,1,2,3,4,5,6],period:'morning'},
+      {id:'m3',name:'가방·물병 챙기기',icon:'🎒',days:[0,1,2,3,4,5,6],period:'morning'},
+      {id:'t1',name:'필사',icon:'✍️',days:[0,1,2,3,4,5,6],period:'evening'},
+      {id:'t2',name:'영어일기',icon:'📓',days:[0,1,2,3,4,5,6],period:'evening'},
+      {id:'t3',name:'독서',icon:'📚',days:[0,1,2,3,4,5,6],period:'evening'},
+      {id:'t4',name:'받아쓰기',icon:'✏️',days:[0,1,2,3,4,5,6],period:'evening'},
+      {id:'t5',name:'줄넘기/운동',icon:'🏃',days:[0,1,2,3,4,5,6],period:'evening'},
+      {id:'t6',name:'샤워',icon:'🚿',days:[0,1,2,3,4,5,6],period:'evening'},
+      {id:'t7',name:'양치하기',icon:'🪥',days:[0,1,2,3,4,5,6],period:'evening'}
+    ],
+    done:{}, cheers:[]
+  };
+}
+var LEGACY_DEFAULT_NAMES=['필사','영어일기','독서','받아쓰기','줄넘기/운동','샤워','양치하기'];
+function cloneTaskList(list){
+  return list.map(function(t){ return {id:t.id,name:t.name,icon:t.icon,days:t.days.slice(),period:t.period}; });
+}
+/* v1 데이터(period 없음)가 예전 기본 7개 그대로면 아침 루틴을 더한 새 기본값으로 올린다 */
+function isLegacyDefault(list){
+  if(!Array.isArray(list)||list.length!==LEGACY_DEFAULT_NAMES.length) return false;
+  for(var i=0;i<list.length;i++){
+    var t=list[i];
+    if(!t||typeof t!=='object') return false;
+    if('period' in t) return false;
+    if(String(t.name||'')!==LEGACY_DEFAULT_NAMES[i]) return false;
+  }
+  return true;
+}
+function normalize(raw){
+  var d=defaultState();
+  if(!raw||typeof raw!=='object') return d;
+  var s={};
+  for(var k in d){ s[k]=(k in raw)?raw[k]:d[k]; }
+  if(typeof s.title!=='string'||!s.title.trim()) s.title=d.title;
+  if(typeof s.child!=='string'||!s.child.trim()) s.child=d.child;
+  if(typeof s.goalLabel!=='string') s.goalLabel=d.goalLabel;
+  if(typeof s.goalTime!=='string') s.goalTime=d.goalTime;
+  if(typeof s.bubble!=='string') s.bubble=d.bubble;
+  if(typeof s.praise!=='string'||!s.praise.trim()) s.praise=d.praise;
+  s.sound=!!s.sound;
+  s.bonus=Math.max(0,parseInt(s.bonus,10)||0);
+  s.avatar=(typeof s.avatar==='string'&&s.avatar)?s.avatar:null;
+  s.mascot=(typeof s.mascot==='string'&&s.mascot)?s.mascot:null;
+  if(!Array.isArray(s.tasks)||!s.tasks.length) s.tasks=cloneTaskList(d.tasks);
+  else if(isLegacyDefault(s.tasks)) s.tasks=cloneTaskList(d.tasks);
+  s.tasks=s.tasks.map(function(t){
+    t=t||{};
+    var days=Array.isArray(t.days)?t.days.filter(function(n){return typeof n==='number'&&n>=0&&n<=6;}):[];
+    if(!days.length) days=ALL_DAYS.slice();
+    days=days.filter(function(v,i,a){return a.indexOf(v)===i;}).sort();
+    var period=(t.period==='morning')?'morning':'evening';
+    return {id:t.id||uid(),name:String(t.name||'할 일').slice(0,24),icon:String(t.icon||'⭐').slice(0,4),days:days,period:period};
+  });
+  if(!s.done||typeof s.done!=='object'||Array.isArray(s.done)) s.done={};
+  var clean={};
+  for(var k2 in s.done){
+    if(/^\d{4}-\d{2}-\d{2}$/.test(k2)&&Array.isArray(s.done[k2])) clean[k2]=s.done[k2].filter(function(v){return typeof v==='string';});
+  }
+  s.done=clean;
+  s.cheers=Array.isArray(s.cheers)?s.cheers.filter(function(c){return c&&typeof c.text==='string';}).map(function(c){
+    return {id:c.id||uid(),from:String(c.from||'가족').slice(0,10),text:String(c.text).slice(0,60),at:c.at||Date.now()};
+  }):[];
+  return s;
+}
+function load(){
+  try{
+    var raw=localStorage.getItem(KEY);
+    if(!raw) return defaultState();
+    return normalize(JSON.parse(raw));
+  }catch(e){ return defaultState(); }
+}
+var state=load();
+var selDate=todayDate();
+var editMode=false;
+var periodFilter='all';
+var justDone=null;
+
+function save(){
+  try{
+    var cutoff=addDays(todayDate(),-120).getTime();
+    for(var k in state.done){
+      var p=k.split('-');
+      var t=new Date(+p[0],+p[1]-1,+p[2]).getTime();
+      if(t<cutoff) delete state.done[k];
+    }
+    localStorage.setItem(KEY,JSON.stringify(state));
+  }catch(e){
+    toast('저장 공간이 부족해요. 사진을 작게 바꿔보세요.');
+  }
+}
+
+/* ---------------- helpers ---------------- */
+function tasksForDate(dateObj){
+  var wd=wdOf(dateObj);
+  return state.tasks.filter(function(t){return t.days.indexOf(wd)>=0;});
+}
+function doneIds(iso){ return state.done[iso]||[]; }
+var PERIOD_META={
+  morning:{emoji:'☀️',label:'아침',section:'아침 루틴'},
+  evening:{emoji:'🌙',label:'저녁',section:'저녁 루틴'}
+};
+function periodOf(t){ return (t&&t.period==='morning')?'morning':'evening'; }
+function tasksOf(list,p){ return list.filter(function(t){return periodOf(t)===p;}); }
+function countIn(list,ids){ var n=0; for(var i=0;i<list.length;i++){ if(ids.indexOf(list[i].id)>=0) n++; } return n; }
+function periodStats(list,ids){
+  var m=tasksOf(list,'morning'), e=tasksOf(list,'evening');
+  return {
+    mTotal:m.length, mDone:countIn(m,ids),
+    eTotal:e.length, eDone:countIn(e,ids),
+    total:list.length, done:countIn(list,ids)
+  };
+}
+function isDayAllDone(st){ return st.total>0&&st.done===st.total; }
+function isPeriodAllDone(st){ return st.mTotal>0&&st.mDone===st.mTotal; }
+function statsFor(dateObj){
+  var iso=isoOf(dateObj), list=tasksForDate(dateObj), ids=doneIds(iso);
+  var done=list.filter(function(t){return ids.indexOf(t.id)>=0;}).length;
+  return {iso:iso,total:list.length,done:done,all:list.length>0&&done===list.length};
+}
+function weekDays(){
+  var s=startOfWeek(new Date());
+  return [0,1,2,3,4,5,6].map(function(i){return addDays(s,i);});
+}
+function weekStickerCount(){
+  var n=0;
+  weekDays().forEach(function(d){ if(statsFor(d).all) n++; });
+  return n+state.bonus;
+}
+
+/* ---------------- render ---------------- */
+function render(){
+  $('titleText').textContent=state.title;
+  document.title=state.title;
+  $('goalLabel').textContent=state.goalLabel;
+  $('goalTime').textContent=state.goalTime;
+  $('bubble').textContent=state.bubble;
+  $('celPraise').textContent=state.praise;
+  renderPhotos();
+  renderSound();
+  renderStrip();
+  renderGrid();
+  renderEditBtn();
+}
+
+function renderEditBtn(){
+  var b=$('editModeBtn');
+  b.classList.toggle('on',editMode);
+  b.innerHTML=editMode?'✅ 편집 끝내기':'✏️ 편집 모드';
+  document.body.classList.toggle('editing',editMode);
+}
+
+function renderPhotos(){
+  var av=$('avatarBtn');
+  if(state.avatar){
+    av.innerHTML='<img alt="프로필 사진" src="'+state.avatar+'">';
+  }else{
+    av.innerHTML='<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="32" fill="#DCCDFA"/><path d="M32 10c12 0 21 7 22 18 1 6-1 10 0 15 2 8-4 16-12 17-5 1-8 3-13 2-9-1-16-9-16-18 0-6 2-9 3-15 2-9 8-17 16-19z" fill="#B7A2E8"/><ellipse cx="24" cy="34" rx="3.4" ry="3.9" fill="#3B3360"/><ellipse cx="41" cy="34" rx="3.4" ry="3.9" fill="#3B3360"/><path d="M28 43q5 5 10 0" stroke="#3B3360" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>';
+  }
+  var m=$('mascotBtn');
+  if(state.mascot){
+    var svg=m.querySelector('svg');
+    if(svg){ m.innerHTML='<img alt="마스코트 사진" src="'+state.mascot+'">'; }
+  }else{
+    if(m.querySelector('img')){
+      m.innerHTML=defaultMascotSVG();
+    }
+  }
+}
+
+var MASCOT_SVG='<svg viewBox="0 0 120 120" aria-hidden="true"><use href="#dittoFace"/></svg>';
+function defaultMascotSVG(){return MASCOT_SVG;}
+
+function renderStrip(){
+  var today=todayDate();
+  var wd=weekDays();
+  var html=wd.map(function(d){
+    var st=statsFor(d);
+    var isToday=sameDay(d,today);
+    var isSel=sameDay(d,selDate);
+    var cls='day'+(isToday?' today':'')+(isSel?' sel':'');
+    var mid=st.all
+      ? '<span class="gold sm" aria-label="모두 완료 · 메타몽 스티커"><svg class="coin" viewBox="18 6 84 96" aria-hidden="true"><use href="#dittoMini"/></svg></span>'
+      : '<span class="dp'+(st.total&&st.done===st.total?' all':'')+'">'+st.done+'/'+st.total+'</span>';
+    return '<button class="'+cls+'" data-date="'+isoOf(d)+'" aria-label="'+(d.getMonth()+1)+'월 '+d.getDate()+'일 '+WEEK_KO[wdOf(d)]+'요일">'
+      +(isToday?'<span class="today-tag">오늘</span>':'')
+      +'<span class="dw">'+WEEK_KO[wdOf(d)]+'</span>'
+      +'<span class="dd">'+(d.getMonth()+1)+'/'+d.getDate()+'</span>'
+      +mid
+      +'</button>';
+  }).join('');
+  html+='<div class="week-sum"><span class="n">'+weekStickerCount()+'</span><span class="cap">이번 주<br>칭찬스티커</span><span class="star"><span class="wk-sticker"><span class="gold" aria-hidden="true"><span>★</span><span class="peek"><svg viewBox="18 6 84 96" aria-hidden="true"><use href="#dittoMini"/></svg></span></span></span></span></div>';
+  $('strip').innerHTML=html;
+  Array.prototype.forEach.call($('strip').querySelectorAll('.day'),function(b){
+    b.addEventListener('click',function(){
+      var p=b.getAttribute('data-date').split('-');
+      selDate=new Date(+p[0],+p[1]-1,+p[2]);
+      render();
+    });
+  });
+}
+
+function headLabel(){
+  var t=todayDate(), d=selDate;
+  if(sameDay(d,t)) return '오늘 할 일';
+  var diff=Math.round((d.getTime()-t.getTime())/86400000);
+  if(diff===-1) return '어제 할 일';
+  if(diff===1) return '내일 할 일';
+  return (d.getMonth()+1)+'월 '+d.getDate()+'일 할 일';
+}
+
+function renderFilters(ps){
+  var defs=[
+    {k:'all',emoji:'',label:'전체',done:ps.done,total:ps.total},
+    {k:'morning',emoji:'☀️',label:'아침',done:ps.mDone,total:ps.mTotal},
+    {k:'evening',emoji:'🌙',label:'저녁',done:ps.eDone,total:ps.eTotal}
+  ];
+  var html=defs.map(function(x){
+    var on=(periodFilter===x.k);
+    return '<button type="button" class="fchip '+x.k+(on?' on':'')+'" data-f="'+x.k+'" aria-pressed="'+(on?'true':'false')+'">'
+      +(x.emoji?'<span class="fe">'+x.emoji+'</span>':'')
+      +'<span class="ft">'+x.label+'</span>'
+      +'<span class="fn">'+x.done+'/'+x.total+'</span>'
+      +'</button>';
+  }).join('');
+  $('filters').innerHTML=html;
+  Array.prototype.forEach.call($('filters').querySelectorAll('[data-f]'),function(b){
+    b.addEventListener('click',function(){
+      var f=b.getAttribute('data-f');
+      if(periodFilter===f) return;
+      periodFilter=f; renderGrid();
+    });
+  });
+}
+
+function addCardHTML(period){
+  return '<button class="card add-card" id="addTaskCard" data-period="'+period+'"><span class="plus">＋</span><span class="t">할 일 추가</span></button>';
+}
+
+function cardHTML(t,idx,isDone,isFirstOpen,groupLen){
+  var p=periodOf(t), meta=PERIOD_META[p];
+  var cls='card'+(isDone?' done':'')+((justDone&&justDone===t.id&&isDone)?' just-done':'');
+  var tools='';
+  if(editMode){
+    tools='<span class="tools" data-tools="1">'
+      +'<button data-act="edit" data-id="'+t.id+'" title="수정" aria-label="수정">✏️</button>'
+      +'<button data-act="up" data-id="'+t.id+'" title="위로" aria-label="위로 이동"'+(idx===0?' disabled style="opacity:.35"':'')+'>▲</button>'
+      +'<button data-act="down" data-id="'+t.id+'" title="아래로" aria-label="아래로 이동"'+(idx===groupLen-1?' disabled style="opacity:.35"':'')+'>▼</button>'
+      +'<button data-act="del" data-id="'+t.id+'" class="del" title="삭제" aria-label="삭제">🗑</button>'
+      +'</span>';
+  }
+  return '<div class="'+cls+'" data-id="'+t.id+'" data-period="'+p+'" role="button" tabindex="0" aria-pressed="'+(isDone?'true':'false')+'" aria-label="'+esc(t.name)+' '+meta.label+' 루틴 '+(isDone?'완료됨':'완료하기')+'">'
+    +'<span class="num">'+(idx+1)+'</span>'
+    +(!isDone&&isFirstOpen?'<span class="now-badge">지금 하자!</span>':'')
+    +tools
+    +'<span class="icon-wrap"><span class="icon">'+esc(t.icon)+'</span>'
+    +(isDone?'<span class="stamp">참 잘<br>했어요</span>':'')
+    +'</span>'
+    +'<span class="name">'+esc(t.name)+'</span>'
+    +'<span class="pbadge '+p+'">'+meta.emoji+' '+meta.label+'</span>'
+    +'<span class="bar">'+(isDone?'✓ 완료!':'완료')+'</span>'
+    +'</div>';
+}
+
+function groupHTML(p,gl,ids,firstOpen,withAdd){
+  var meta=PERIOD_META[p];
+  var done=countIn(gl,ids);
+  var pct=gl.length?Math.round(done/gl.length*100):0;
+  var cards=gl.map(function(t,i){
+    return cardHTML(t,i,ids.indexOf(t.id)>=0,firstOpen===t.id,gl.length);
+  }).join('');
+  if(withAdd) cards+=addCardHTML(p);
+  return '<section class="pgroup" data-period="'+p+'">'
+    +'<div class="pgroup-head '+p+'">'
+      +'<span class="pico">'+meta.emoji+'</span>'
+      +'<span class="pname">'+meta.section+'</span>'
+      +'<span class="pcount">'+done+'/'+gl.length+'</span>'
+      +'<span class="pbar" aria-hidden="true"><i style="width:'+pct+'%"></i></span>'
+    +'</div>'
+    +'<div class="grid">'+cards+'</div>'
+    +'</section>';
+}
+
+function renderGrid(){
+  var iso=isoOf(selDate), list=tasksForDate(selDate), ids=doneIds(iso);
+  var ps=periodStats(list,ids);
+  $('listTitle').textContent=headLabel();
+  var shown=(periodFilter==='morning')?{done:ps.mDone,total:ps.mTotal}
+    :(periodFilter==='evening')?{done:ps.eDone,total:ps.eTotal}
+    :{done:ps.done,total:ps.total};
+  $('countPill').textContent=shown.done+'/'+shown.total;
+  renderFilters(ps);
+
+  /* 표시 순서: 아침 → 저녁 */
+  var ordered=tasksOf(list,'morning').concat(tasksOf(list,'evening'));
+  var firstOpen=null;
+  for(var i=0;i<ordered.length;i++){ if(ids.indexOf(ordered[i].id)<0){ firstOpen=ordered[i].id; break; } }
+
+  var groups=(periodFilter==='all')?['morning','evening']:[periodFilter];
+  var chunks=[];
+  groups.forEach(function(p){
+    var gl=tasksOf(list,p);
+    if(periodFilter==='all'&&!gl.length) return;
+    chunks.push({p:p,list:gl});
+  });
+
+  var html='';
+  if(!list.length){
+    html+='<div class="empty"><span class="big">🌱</span>이 날은 할 일이 없어요.<br>아래 <b>＋ 할 일 추가</b>로 만들어 보세요.</div>';
+  }
+  if(!list.length){
+    html+='<div class="grid" style="margin-top:10px">'+addCardHTML(periodFilter==='all'?'evening':periodFilter)+'</div>';
+  }else if(!chunks.length){
+    var want=(periodFilter==='morning')?'morning':'evening';
+    html+='<div class="empty"><span class="big">'+PERIOD_META[want].emoji+'</span>'+PERIOD_META[want].section+' 할 일이 아직 없어요.<br>아래 <b>＋ 할 일 추가</b>로 만들어 보세요.</div>';
+    html+='<div class="grid" style="margin-top:10px">'+addCardHTML(want)+'</div>';
+  }else{
+    chunks.forEach(function(c,ci){
+      if(!c.list.length){
+        html+='<div class="empty"><span class="big">'+PERIOD_META[c.p].emoji+'</span>'+PERIOD_META[c.p].section+' 할 일이 아직 없어요.<br>아래 <b>＋ 할 일 추가</b>로 만들어 보세요.</div>';
+        html+='<div class="grid" style="margin-top:10px">'+addCardHTML(c.p)+'</div>';
+        return;
+      }
+      html+=groupHTML(c.p,c.list,ids,firstOpen,ci===chunks.length-1);
+    });
+  }
+  $('grid').innerHTML=html;
+  justDone=null;
+
+  Array.prototype.forEach.call($('grid').querySelectorAll('.card[data-id]'),function(card){
+    var id=card.getAttribute('data-id');
+    card.addEventListener('click',function(ev){
+      var tb=ev.target.closest('[data-act]');
+      if(tb){
+        ev.stopPropagation();
+        var act=tb.getAttribute('data-act');
+        var tid=tb.getAttribute('data-id');
+        if(act==='edit') openTask(tid);
+        else if(act==='del') deleteTask(tid);
+        else if(act==='up') moveTask(tid,-1);
+        else if(act==='down') moveTask(tid,1);
+        return;
+      }
+      toggleTask(id);
+    });
+    card.addEventListener('keydown',function(ev){
+      if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); toggleTask(id); }
+    });
+  });
+  var addCard=$('addTaskCard');
+  if(addCard) addCard.addEventListener('click',function(){ openTask(null, addCard.getAttribute('data-period')); });
+}
+
+/* ---------------- actions ---------------- */
+function toggleTask(id){
+  var iso=isoOf(selDate), list=tasksForDate(selDate);
+  var arr=state.done[iso]||(state.done[iso]=[]);
+  var before=periodStats(list,arr);
+  var idx=arr.indexOf(id);
+  var nowChecked=false;
+  if(idx>=0){ arr.splice(idx,1); }
+  else { arr.push(id); nowChecked=true; justDone=id; }
+  var after=periodStats(list,arr);
+  save();
+  render();
+  if(nowChecked){
+    if(isDayAllDone(after)&&!isDayAllDone(before)) celebrate(selDate);
+    else if(isPeriodAllDone(after)&&!isPeriodAllDone(before)) morningCheer();
+    else ding();
+  }
+}
+
+function moveTask(id,dir){
+  var t=state.tasks.find(function(x){return x.id===id;});
+  if(!t) return;
+  var p=periodOf(t);
+  var group=state.tasks.filter(function(x){return periodOf(x)===p;});
+  var gi=group.indexOf(t), nj=gi+dir;
+  if(gi<0||nj<0||nj>=group.length) return;
+  var other=group[nj];
+  var i=state.tasks.indexOf(t), j=state.tasks.indexOf(other);
+  if(i<0||j<0) return;
+  state.tasks[i]=other; state.tasks[j]=t;
+  save(); render();
+}
+
+function deleteTask(id){
+  var t=state.tasks.find(function(x){return x.id===id;});
+  if(!t) return;
+  if(!confirm('"'+t.name+'" 할 일을 삭제할까요?')) return;
+  state.tasks=state.tasks.filter(function(x){return x.id!==id;});
+  save(); render(); toast('할 일을 삭제했어요');
+}
+
+/* ---------------- task modal ---------------- */
+var editingId=null, draftIcon='⭐', draftDays=ALL_DAYS.slice(), draftPeriod='evening';
+function openTask(id,presetPeriod){
+  editingId=id;
+  var t=id?state.tasks.find(function(x){return x.id===id;}):null;
+  $('taskModalTitle').textContent=t?'✏️ 할 일 편집':'＋ 할 일 추가';
+  $('taskName').value=t?t.name:'';
+  draftIcon=t?t.icon:(EMOJIS[0]);
+  $('taskIcon').value=t?t.icon:'';
+  draftDays=t?t.days.slice():ALL_DAYS.slice();
+  draftPeriod=t?periodOf(t):(presetPeriod||(periodFilter==='morning'?'morning':'evening'));
+  $('taskDelete').style.display=t?'inline-flex':'none';
+  buildEmojiGrid();
+  buildPeriodChips();
+  buildDayChips();
+  openModal('taskModal');
+  setTimeout(function(){ $('taskName').focus(); },120);
+}
+function buildPeriodChips(){
+  $('periodChips').innerHTML=['morning','evening'].map(function(p){
+    var meta=PERIOD_META[p];
+    var on=(draftPeriod===p);
+    return '<button type="button" data-period="'+p+'" class="'+(on?'on':'')+'" aria-pressed="'+(on?'true':'false')+'"><span class="pe">'+meta.emoji+'</span>'+meta.label+' 루틴</button>';
+  }).join('');
+  Array.prototype.forEach.call($('periodChips').querySelectorAll('[data-period]'),function(b){
+    b.addEventListener('click',function(){
+      draftPeriod=b.getAttribute('data-period');
+      buildPeriodChips();
+    });
+  });
+}
+function buildEmojiGrid(){
+  $('emojiGrid').innerHTML=EMOJIS.map(function(e){
+    return '<button data-emoji="'+e+'" class="'+(e===draftIcon?'on':'')+'">'+e+'</button>';
+  }).join('');
+  Array.prototype.forEach.call($('emojiGrid').querySelectorAll('button'),function(b){
+    b.addEventListener('click',function(){
+      draftIcon=b.getAttribute('data-emoji');
+      $('taskIcon').value='';
+      buildEmojiGrid();
+    });
+  });
+}
+function buildDayChips(){
+  var groups=[{k:'매일',v:[0,1,2,3,4,5,6]},{k:'평일',v:[0,1,2,3,4]},{k:'주말',v:[5,6]}];
+  var isPreset=groups.some(function(g){return g.v.length===draftDays.length&&g.v.every(function(v){return draftDays.indexOf(v)>=0;});});
+  var html=groups.map(function(g){
+    var on=g.v.length===draftDays.length&&g.v.every(function(v){return draftDays.indexOf(v)>=0;});
+    return '<button data-preset="'+g.k+'" class="'+(on?'on':'')+'">'+g.k+'</button>';
+  }).join('');
+  html+='<span style="width:6px"></span>';
+  html+=WEEK_KO.map(function(w,i){
+    return '<button data-day="'+i+'" class="'+(draftDays.indexOf(i)>=0&&!isPreset?'on':'')+'">'+w+'</button>';
+  }).join('');
+  $('dayChips').innerHTML=html;
+  Array.prototype.forEach.call($('dayChips').querySelectorAll('[data-preset]'),function(b){
+    b.addEventListener('click',function(){
+      var g=groups.find(function(x){return x.k===b.getAttribute('data-preset');});
+      draftDays=g.v.slice(); buildDayChips();
+    });
+  });
+  Array.prototype.forEach.call($('dayChips').querySelectorAll('[data-day]'),function(b){
+    b.addEventListener('click',function(){
+      var n=+b.getAttribute('data-day');
+      var i=draftDays.indexOf(n);
+      if(i>=0){ if(draftDays.length>1) draftDays.splice(i,1); }
+      else { draftDays.push(n); }
+      draftDays.sort(); buildDayChips();
+    });
+  });
+}
+function saveTask(){
+  var name=$('taskName').value.trim();
+  var icon=($('taskIcon').value.trim()||draftIcon||'⭐').slice(0,4);
+  var wasEdit=!!editingId;
+  if(!name){ toast('할 일 이름을 적어주세요'); $('taskName').focus(); return; }
+  if(!draftDays.length){ toast('요일을 하나 이상 골라주세요'); return; }
+  if(editingId){
+    var t=state.tasks.find(function(x){return x.id===editingId;});
+    if(t){
+      var moved=(periodOf(t)!==draftPeriod);
+      t.name=name; t.icon=icon; t.days=draftDays.slice().sort(); t.period=draftPeriod;
+      if(moved) regroupTask(t);
+    }
+  }else{
+    state.tasks.push({id:uid(),name:name,icon:icon,days:draftDays.slice().sort(),period:draftPeriod});
+  }
+  save(); closeModal('taskModal'); render();
+  toast(wasEdit?'할 일을 고쳤어요':(draftPeriod==='morning'?'☀️ 아침 루틴에 추가했어요':'🌙 저녁 루틴에 추가했어요'));
+}
+
+/* 아침↔저녁을 옮기면 그 시간대 묶음 끝으로 자리를 옮긴다 */
+function regroupTask(t){
+  state.tasks=state.tasks.filter(function(x){return x!==t;});
+  var p=periodOf(t), last=-1;
+  for(var i=0;i<state.tasks.length;i++){ if(periodOf(state.tasks[i])===p) last=i; }
+  if(last>=0){ state.tasks.splice(last+1,0,t); return; }
+  if(p==='morning'){
+    var k=-1;
+    for(var j=0;j<state.tasks.length;j++){ if(periodOf(state.tasks[j])==='evening'){ k=j; break; } }
+    if(k>=0) state.tasks.splice(k,0,t); else state.tasks.push(t);
+  }else{
+    state.tasks.push(t);
+  }
+}
+
+/* ---------------- settings ---------------- */
+function openSettings(focusId){
+  $('setTitle').value=state.title;
+  $('setChild').value=state.child;
+  $('setGoalLabel').value=state.goalLabel;
+  $('setGoalTime').value=state.goalTime;
+  $('setBubble').value=state.bubble;
+  $('setPraise').value=state.praise;
+  $('setSound').classList.toggle('on',state.sound);
+  $('stVal').textContent=state.bonus;
+  openModal('settingsModal');
+  if(focusId){
+    setTimeout(function(){
+      var el=$(focusId);
+      if(el){ el.focus(); el.select&&el.select(); }
+    },140);
+  }
+}
+function bindSettings(){
+  $('setTitle').addEventListener('input',function(){ state.title=this.value||'택민이의 할일'; save(); $('titleText').textContent=state.title; document.title=state.title; });
+  $('setChild').addEventListener('input',function(){ state.child=this.value||'택민이'; save(); });
+  $('setGoalLabel').addEventListener('input',function(){ state.goalLabel=this.value; save(); $('goalLabel').textContent=state.goalLabel; });
+  $('setGoalTime').addEventListener('input',function(){ state.goalTime=this.value; save(); $('goalTime').textContent=state.goalTime; });
+  $('setBubble').addEventListener('input',function(){ state.bubble=this.value; save(); $('bubble').textContent=state.bubble; });
+  $('setPraise').addEventListener('input',function(){ state.praise=this.value||'택민이 정말 멋져! 칭찬스티커 받으러 가자!'; save(); $('celPraise').textContent=state.praise; });
+  $('setSound').addEventListener('click',function(){ toggleSound(); $('setSound').classList.toggle('on',state.sound); });
+  $('stPlus').addEventListener('click',function(){ state.bonus++; save(); $('stVal').textContent=state.bonus; renderStrip(); });
+  $('stMinus').addEventListener('click',function(){ state.bonus=Math.max(0,state.bonus-1); save(); $('stVal').textContent=state.bonus; renderStrip(); });
+  $('resetStickers').addEventListener('click',function(){
+    if(!confirm('이번 주 칭찬스티커와 완료 기록을 모두 지울까요?')) return;
+    weekDays().forEach(function(d){ delete state.done[isoOf(d)]; });
+    state.bonus=0; save(); $('stVal').textContent=0; render();
+    toast('이번 주 기록을 초기화했어요');
+  });
+  $('avatarPhoto').addEventListener('click',function(){ pickPhoto('avatar'); });
+  $('mascotPhoto').addEventListener('click',function(){ pickPhoto('mascot'); });
+  $('clearPhotos').addEventListener('click',function(){
+    state.avatar=null; state.mascot=null; save(); render(); toast('기본 그림으로 돌아왔어요');
+  });
+}
+
+/* ---------------- photos ---------------- */
+var photoTarget='avatar';
+function pickPhoto(target){ photoTarget=target; $('imgPicker').value=''; $('imgPicker').click(); }
+function handlePhoto(file){
+  if(!file) return;
+  var reader=new FileReader();
+  reader.onload=function(){
+    var img=new Image();
+    img.onload=function(){
+      try{
+        var max=440, w=img.width, h=img.height;
+        var sc=Math.min(1,max/Math.max(w,h));
+        w=Math.max(1,Math.round(w*sc)); h=Math.max(1,Math.round(h*sc));
+        var c=document.createElement('canvas'); c.width=w; c.height=h;
+        c.getContext('2d').drawImage(img,0,0,w,h);
+        var data=c.toDataURL('image/jpeg',0.82);
+        if(photoTarget==='avatar') state.avatar=data; else state.mascot=data;
+        save(); render();
+        toast(photoTarget==='avatar'?'프로필 사진을 바꿨어요':'마스코트 사진을 바꿨어요');
+      }catch(err){ toast('사진을 넣지 못했어요'); }
+    };
+    img.onerror=function(){ toast('사진을 읽지 못했어요'); };
+    img.src=reader.result;
+  };
+  reader.onerror=function(){ toast('사진을 읽지 못했어요'); };
+  reader.readAsDataURL(file);
+}
+
+/* ---------------- cheer ---------------- */
+function openCheer(){
+  $('cheerFrom').value=localStorage.getItem('tm-cheer-name')||'엄마';
+  $('cheerText').value='';
+  renderCheerList();
+  openModal('cheerModal');
+}
+function renderCheerList(){
+  var list=state.cheers.slice().sort(function(a,b){return (b.at||0)-(a.at||0);});
+  if(!list.length){
+    $('cheerList').innerHTML='<div class="item" style="justify-content:center;color:#B3A48C;font-weight:800">아직 응원 메시지가 없어요. 첫 한마디를 남겨보세요!</div>';
+    return;
+  }
+  $('cheerList').innerHTML=list.map(function(c){
+    var dt=new Date(c.at||Date.now());
+    return '<div class="item"><span class="who">'+esc(c.from)+'</span><span class="txt">'+esc(c.text)+'</span><span class="when">'+(dt.getMonth()+1)+'/'+dt.getDate()+'</span><button class="del" data-del="'+c.id+'" aria-label="삭제">×</button></div>';
+  }).join('');
+  Array.prototype.forEach.call($('cheerList').querySelectorAll('[data-del]'),function(b){
+    b.addEventListener('click',function(){
+      var id=b.getAttribute('data-del');
+      state.cheers=state.cheers.filter(function(c){return c.id!==id;});
+      save(); renderCheerList();
+    });
+  });
+}
+function sendCheer(text){
+  text=(text||'').trim();
+  if(!text){ toast('응원 한마디를 적어주세요'); return; }
+  var from=($('cheerFrom').value||'가족').trim().slice(0,10);
+  localStorage.setItem('tm-cheer-name',from);
+  state.cheers.push({id:uid(),from:from,text:text.slice(0,60),at:Date.now()});
+  state.cheers=state.cheers.slice(-60);
+  save(); $('cheerText').value=''; renderCheerList(); ding();
+  toast('응원을 보냈어요 💌');
+}
+
+/* ---------------- share / backup ---------------- */
+function exportJSON(){
+  var data=JSON.stringify(state,null,2);
+  var blob=new Blob([data],{type:'application/json'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;
+  a.download='택민이-할일-백업-'+isoOf(todayDate())+'.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function(){ URL.revokeObjectURL(url); },1500);
+  $('shareStatus').textContent='백업 파일을 저장했어요.';
+  toast('백업 파일을 저장했어요');
+}
+function copyJSON(){
+  var data=JSON.stringify(state);
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(data).then(function(){
+      $('shareStatus').textContent='백업 내용을 복사했어요.';
+      toast('복사했어요');
+    },function(){ $('shareStatus').textContent='복사가 막혔어요. 백업 파일을 이용해 주세요.'; });
+  }else{
+    $('shareStatus').textContent='이 브라우저에서는 복사가 안 돼요. 백업 파일을 이용해 주세요.';
+  }
+}
+function importJSON(file){
+  if(!file) return;
+  var r=new FileReader();
+  r.onload=function(){
+    try{
+      var obj=JSON.parse(r.result);
+      state=normalize(obj);
+      save(); render(); closeModal('shareModal');
+      $('shareStatus').textContent='불러왔어요.';
+      toast('백업을 불러왔어요');
+    }catch(e){ $('shareStatus').textContent='파일을 읽지 못했어요. 백업 파일이 맞는지 확인해 주세요.'; }
+  };
+  r.onerror=function(){ $('shareStatus').textContent='파일을 읽지 못했어요.'; };
+  r.readAsText(file);
+}
+function resetAll(){
+  if(!confirm('모든 할 일과 기록을 처음 상태로 되돌릴까요? (되돌릴 수 없어요)')) return;
+  state=defaultState(); save(); render(); closeModal('shareModal');
+  toast('처음 상태로 돌아왔어요');
+}
+
+/* ---------------- modals ---------------- */
+function openModal(id){
+  $(id).classList.remove('hidden');
+  document.body.classList.add('modal-open');
+}
+function closeModal(id){
+  $(id).classList.add('hidden');
+  if(!document.querySelector('.modal-back:not(.hidden)')) document.body.classList.remove('modal-open');
+}
+function closeAll(){
+  Array.prototype.forEach.call(document.querySelectorAll('.modal-back'),function(m){ m.classList.add('hidden'); });
+  document.body.classList.remove('modal-open');
+}
+
+/* ---------------- toast ---------------- */
+var toastTimer=null;
+function toastHide(){
+  var t=$('toast');
+  t.classList.remove('show');
+  clearTimeout(toastTimer);
+}
+function toast(msg,ms){
+  var t=$('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){ t.classList.remove('show'); },ms||2100);
+}
+
+/* ---------------- audio ---------------- */
+var actx=null;
+function audioCtx(){
+  if(!state.sound) return null;
+  try{
+    if(!actx){ var AC=window.AudioContext||window.webkitAudioContext; if(!AC) return null; actx=new AC(); }
+    if(actx.state==='suspended') actx.resume();
+    return actx;
+  }catch(e){ return null; }
+}
+function tone(freq,start,dur,type,vol){
+  var c=audioCtx(); if(!c) return;
+  try{
+    var t0=c.currentTime+start;
+    var o=c.createOscillator(), g=c.createGain();
+    o.type=type||'triangle'; o.frequency.setValueAtTime(freq,t0);
+    g.gain.setValueAtTime(0.0001,t0);
+    g.gain.exponentialRampToValueAtTime(vol||0.14,t0+0.015);
+    g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
+    o.connect(g); g.connect(c.destination);
+    o.start(t0); o.stop(t0+dur+0.02);
+  }catch(e){}
+}
+function ding(){ tone(880,0,0.14,'sine',0.09); tone(1320,0.06,0.16,'sine',0.06); }
+function playFanfare(){
+  if(!state.sound) return;
+  var seq=[[523.25,0],[659.25,0.12],[783.99,0.24],[1046.5,0.38],[783.99,0.56],[1046.5,0.66],[1318.5,0.80]];
+  seq.forEach(function(n){ tone(n[0],n[1],0.30,'triangle',0.13); });
+  tone(261.63,0,0.9,'sine',0.05);
+  var c=audioCtx();
+  if(c){
+    try{
+      var dur=0.5, sr=c.sampleRate, buf=c.createBuffer(1,Math.floor(sr*dur),sr), d=buf.getChannelData(0);
+      for(var i=0;i<d.length;i++){ d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,3)*0.25; }
+      var src=c.createBufferSource(), g=c.createGain(), bp=c.createBiquadFilter();
+      bp.type='bandpass'; bp.frequency.value=3200; bp.Q.value=0.8;
+      g.gain.value=0.35;
+      src.buffer=buf; src.connect(bp); bp.connect(g); g.connect(c.destination);
+      src.start(c.currentTime+0.38);
+    }catch(e){}
+  }
+}
+function toggleSound(){
+  state.sound=!state.sound; save(); renderSound(); render();
+  if(state.sound){ ding(); toast('효과음 켜짐'); } else { toast('효과음 꺼짐'); }
+}
+function renderSound(){
+  var b=$('soundBtn');
+  b.textContent=state.sound?'🔊':'🔇';
+  b.classList.toggle('off',!state.sound);
+  b.setAttribute('aria-pressed',state.sound?'true':'false');
+}
+
+/* ---------------- fireworks ---------------- */
+var fx={c:null,ctx:null,W:0,H:0,dpr:1,parts:[],raf:0,endAt:0,last:0,spawnTimer:null,active:false,confettiAt:0};
+function fxInit(){
+  fx.c=$('fx'); fx.ctx=fx.c.getContext('2d');
+  fxResize();
+  window.addEventListener('resize',fxResize);
+}
+function fxResize(){
+  if(!fx.c) return;
+  fx.dpr=Math.min(window.devicePixelRatio||1,2);
+  fx.W=window.innerWidth; fx.H=window.innerHeight;
+  fx.c.width=Math.floor(fx.W*fx.dpr); fx.c.height=Math.floor(fx.H*fx.dpr);
+  fx.c.style.width=fx.W+'px'; fx.c.style.height=fx.H+'px';
+  fx.ctx.setTransform(fx.dpr,0,0,fx.dpr,0,0);
+}
+var HUES=[45,20,340,275,200,120,0,310];
+function burst(cx,cy,big){
+  var hue=HUES[(Math.random()*HUES.length)|0];
+  var n=big?88:54;
+  var speed=big?7.4:5.6;
+  for(var i=0;i<n;i++){
+    var a=Math.random()*Math.PI*2;
+    var sp=speed*(0.35+Math.random()*0.85);
+    fx.parts.push({
+      x:cx,y:cy,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,
+      life:1,decay:0.008+Math.random()*0.012,
+      hue:hue+(Math.random()*36-18),sat:90,light:60+Math.random()*18,
+      size:1.6+Math.random()*1.8,kind:'spark',spin:0,rot:0
+    });
+  }
+  for(var j=0;j<10;j++){
+    var a2=Math.random()*Math.PI*2, sp2=Math.random()*2.4;
+    fx.parts.push({x:cx,y:cy,vx:Math.cos(a2)*sp2,vy:Math.sin(a2)*sp2,life:1,decay:0.006,hue:hue,sat:95,light:80,size:2.4,kind:'spark',spin:0,rot:0});
+  }
+}
+function confetti(n){
+  var cols=['#FFD35C','#FF8FA3','#8CD0FF','#A6E3A1','#C7A9F5','#FFB37A','#FFF1A8'];
+  for(var i=0;i<(n||110);i++){
+    fx.parts.push({
+      x:Math.random()*fx.W, y:-20-Math.random()*fx.H*0.32,
+      vx:(Math.random()-0.5)*2.6, vy:1.6+Math.random()*2.6,
+      life:1, decay:0.0022+Math.random()*0.0022,
+      hue:0,sat:0,light:0,
+      size:4+Math.random()*5, kind:'confetti',
+      color:cols[(Math.random()*cols.length)|0],
+      rot:Math.random()*Math.PI*2, spin:(Math.random()-0.5)*0.24
+    });
+  }
+}
+function fxFrame(ts){
+  var ctx=fx.ctx;
+  if(!ctx){ return; }
+  var dt=Math.min(2.2,(ts-(fx.last||ts))/16.67)||1;
+  fx.last=ts;
+  ctx.globalCompositeOperation='destination-out';
+  ctx.fillStyle='rgba(0,0,0,0.16)';
+  ctx.fillRect(0,0,fx.W,fx.H);
+  ctx.globalCompositeOperation='lighter';
+  var alive=[];
+  for(var i=0;i<fx.parts.length;i++){
+    var p=fx.parts[i];
+    p.life-=p.decay*dt;
+    if(p.life<=0) continue;
+    if(p.kind==='confetti'){
+      p.vy+=0.055*dt; p.vx*=0.995;
+      p.x+=p.vx*dt; p.y+=p.vy*dt; p.rot+=p.spin*dt;
+      ctx.globalCompositeOperation='source-over';
+      ctx.save();
+      ctx.translate(p.x,p.y); ctx.rotate(p.rot);
+      ctx.globalAlpha=Math.max(0,Math.min(1,p.life*1.4));
+      ctx.fillStyle=p.color;
+      ctx.fillRect(-p.size/2,-p.size*0.36,p.size,p.size*0.72);
+      ctx.restore();
+      ctx.globalAlpha=1;
+      ctx.globalCompositeOperation='lighter';
+      if(p.y<fx.H+40) alive.push(p);
+      continue;
+    }
+    p.vy+=0.062*dt;
+    p.vx*=0.988; p.vy*=0.988;
+    p.x+=p.vx*dt; p.y+=p.vy*dt;
+    var a=Math.max(0,Math.min(1,p.life));
+    if(a>0.02){
+      ctx.beginPath();
+      ctx.fillStyle='hsla('+p.hue+','+p.sat+'%,'+p.light+'%,'+a+')';
+      ctx.arc(p.x,p.y,p.size*(0.5+a*0.9),0,Math.PI*2);
+      ctx.fill();
+      if(a>0.55){
+        ctx.beginPath();
+        ctx.fillStyle='hsla('+p.hue+',100%,92%,'+(a*0.28)+')';
+        ctx.arc(p.x,p.y,p.size*2.6,0,Math.PI*2);
+        ctx.fill();
+      }
+    }
+    alive.push(p);
+  }
+  fx.parts=alive;
+  var now=performance.now();
+  if(now<fx.endAt||fx.parts.length){
+    fx.raf=requestAnimationFrame(fxFrame);
+  }else{
+    fx.raf=0; fx.active=false;
+    fx.c.classList.remove('on');
+    fx.ctx.clearRect(0,0,fx.W,fx.H);
+    fx.ctx.globalCompositeOperation='source-over';
+  }
+}
+function startFireworks(duration,light){
+  if(!fx.c) fxInit();
+  fxResize();
+  fx.active=true;
+  fx.c.classList.add('on');
+  fx.endAt=performance.now()+(duration||4600);
+  confetti(light?34:120);
+  var shots=light
+    ? [[0.34,0.36,0],[0.66,0.30,0],[0.50,0.46,1]]
+    : [[0.28,0.34,1],[0.62,0.26,1],[0.46,0.5,0],[0.78,0.44,0],[0.18,0.56,0],[0.86,0.22,1]];
+  shots.forEach(function(s,i){
+    setTimeout(function(){ if(fx.active) burst(fx.W*s[0],fx.H*s[1],!!s[2]); },110+i*(light?330:230));
+  });
+  clearInterval(fx.spawnTimer);
+  fx.spawnTimer=setInterval(function(){
+    if(performance.now()>fx.endAt){ clearInterval(fx.spawnTimer); return; }
+    burst(fx.W*(0.14+Math.random()*0.72), fx.H*(0.16+Math.random()*0.42), !light&&Math.random()<0.35);
+    if(!light&&Math.random()<0.32) confetti(26);
+  },light?760:430);
+  if(!fx.raf) fx.last=0, fx.raf=requestAnimationFrame(fxFrame);
+}
+
+/* ---------------- celebration ---------------- */
+function celebrate(dateObj){
+  var iso=isoOf(dateObj), list=tasksForDate(dateObj), ids=doneIds(iso);
+  var ps=periodStats(list,ids);
+  var bits=[];
+  if(ps.mTotal) bits.push('☀️ 아침 '+ps.mDone+'/'+ps.mTotal);
+  if(ps.eTotal) bits.push('🌙 저녁 '+ps.eDone+'/'+ps.eTotal);
+  $('celSub').textContent=bits.join(' · ')+' 모두 끝냈어요 · 칭찬스티커 +1';
+  toastHide();
+  startFireworks(4800);
+  playFanfare();
+  openModal('celebrateModal');
+  renderStrip();
+}
+
+/* 아침 루틴만 끝났을 때 : 가벼운 축하 */
+function morningCheer(){
+  toast('☀️ 아침 루틴 끝! 기분 좋게 등교하자!',3800);
+  startFireworks(2400,true);
+  playMorningChime();
+}
+function playMorningChime(){
+  if(!state.sound) return;
+  var seq=[[783.99,0],[987.77,0.10],[1174.66,0.20],[1567.98,0.32]];
+  seq.forEach(function(n){ tone(n[0],n[1],0.28,'sine',0.10); });
+}
+
+/* ---------------- clock ---------------- */
+var lastIso=isoOf(todayDate());
+function tick(){
+  var n=new Date();
+  var h=n.getHours();
+  var ampm=h<12?'오전':'오후';
+  var h12=h%12; if(h12===0) h12=12;
+  var mins=n.getMinutes(), secs=n.getSeconds();
+  $('clockAmPm').textContent=ampm;
+  $('clockDigits').innerHTML=h12+':'+pad(mins)+'<span class="sec">:'+pad(secs)+'</span>';
+  $('timeLine').textContent=ampm+' '+h12+':'+pad(mins);
+  $('dateLine').textContent=(n.getMonth()+1)+'월 '+n.getDate()+'일 '+['일','월','화','수','목','금','토'][n.getDay()]+'요일';
+  var isoNow=isoOf(n);
+  if(isoNow!==lastIso){
+    lastIso=isoNow;
+    if(sameDay(selDate,todayDate())) selDate=todayDate();
+    render();
+  }
+}
+
+/* ---------------- events ---------------- */
+function bind(){
+  $('titleBtn').addEventListener('click',function(){ openSettings('setTitle'); });
+  $('settingsBtn').addEventListener('click',function(){ openSettings(); });
+  $('goalBtn').addEventListener('click',function(){ openSettings('setGoalLabel'); });
+  $('avatarBtn').addEventListener('click',function(){ pickPhoto('avatar'); });
+  $('mascotBtn').addEventListener('click',function(){ pickPhoto('mascot'); });
+  $('soundBtn').addEventListener('click',function(){ toggleSound(); });
+  $('cheerBtn').addEventListener('click',function(){ openCheer(); });
+  $('shareBtn').addEventListener('click',function(){ $('shareStatus').textContent=''; openModal('shareModal'); });
+  $('addTaskBtn').addEventListener('click',function(){ openTask(null); });
+  $('editModeBtn').addEventListener('click',function(){
+    editMode=!editMode; renderEditBtn(); renderGrid();
+    if(editMode) toast('편집 모드: ✏️ 수정 · ▲▼ 순서 · 🗑 삭제');
+  });
+
+  $('taskSave').addEventListener('click',saveTask);
+  $('taskDelete').addEventListener('click',function(){
+    if(!editingId) return;
+    var t=state.tasks.find(function(x){return x.id===editingId;});
+    if(!t) return;
+    if(!confirm('"'+t.name+'" 할 일을 삭제할까요?')) return;
+    state.tasks=state.tasks.filter(function(x){return x.id!==editingId;});
+    save(); closeModal('taskModal'); render(); toast('할 일을 삭제했어요');
+  });
+  $('taskIcon').addEventListener('input',function(){
+    var v=this.value.trim();
+    if(v){ draftIcon=v; buildEmojiGrid(); }
+  });
+  $('taskName').addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); saveTask(); } });
+
+  $('cheerSend').addEventListener('click',function(){ sendCheer($('cheerText').value); });
+  $('cheerText').addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); sendCheer(this.value); } });
+  Array.prototype.forEach.call($('quickCheers').querySelectorAll('button'),function(b){
+    b.addEventListener('click',function(){ $('cheerText').value=b.getAttribute('data-t'); $('cheerText').focus(); });
+  });
+
+  $('exportBtn').addEventListener('click',exportJSON);
+  $('copyBtn').addEventListener('click',copyJSON);
+  $('importBtn').addEventListener('click',function(){ $('jsonPicker').value=''; $('jsonPicker').click(); });
+  $('resetBtn').addEventListener('click',resetAll);
+
+  $('celAgain').addEventListener('click',function(){ startFireworks(4200); playFanfare(); });
+
+  $('imgPicker').addEventListener('change',function(){ handlePhoto(this.files&&this.files[0]); });
+  $('jsonPicker').addEventListener('change',function(){ importJSON(this.files&&this.files[0]); });
+
+  Array.prototype.forEach.call(document.querySelectorAll('[data-close]'),function(b){
+    b.addEventListener('click',function(){
+      var back=b.closest('.modal-back');
+      if(back) closeModal(back.id);
+    });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('.modal-back'),function(back){
+    back.addEventListener('mousedown',function(e){ if(e.target===back) closeModal(back.id); });
+  });
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape') closeAll();
+  });
+  bindSettings();
+}
+
+/* ---------------- init ---------------- */
+function paintStars(){
+  var g=$('stars'); if(!g) return;
+  var s='';
+  for(var i=0;i<70;i++){
+    var x=(Math.random()*1200).toFixed(1);
+    var y=(Math.random()*180).toFixed(1);
+    var r=(Math.random()*1.3+0.4).toFixed(2);
+    var o=(Math.random()*0.6+0.25).toFixed(2);
+    s+='<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="#FFF6DC" opacity="'+o+'"/>';
+  }
+  for(var j=0;j<7;j++){
+    var x2=(Math.random()*1180+10).toFixed(1), y2=(Math.random()*140+8).toFixed(1);
+    s+='<path d="M'+x2+' '+y2+' l2 6 6 2 -6 2 -2 6 -2 -6 -6 -2 6 -2z" fill="#FFEFC8" opacity="'+(0.45+Math.random()*0.4).toFixed(2)+'"/>';
+  }
+  g.innerHTML=s;
+}
+
+paintStars();
+bind();
+render();
+tick();
+setInterval(tick,1000);
+})();
+</script>
+</body>
+</html>
